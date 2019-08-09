@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>wuliaotc 的博客</title>
+    <link>http://wuliaotc.github.io/</link>
+    <description>Recent content on wuliaotc 的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 09 Aug 2019 00:00:00 +0000</lastBuildDate>
+    
+        <atom:link href="http://wuliaotc.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>About</title>
+      <link>http://wuliaotc.github.io/about/</link>
+      <pubDate>Sun, 20 Aug 2017 21:38:52 +0800</pubDate>
+      
+      <guid>http://wuliaotc.github.io/about/</guid>
+      
+        <description>&lt;p&gt;Hugo is a static site engine written in Go.&lt;/p&gt;
+
+&lt;p&gt;It makes use of a variety of open source projects including:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/spf13/cobra&#34;&gt;Cobra&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/spf13/viper&#34;&gt;Viper&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/spf13/jWalterWeatherman&#34;&gt;J Walter Weatherman&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/spf13/cast&#34;&gt;Cast&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Learn more and contribute on &lt;a href=&#34;https://github.com/gohugoio&#34;&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+</description>
+      
+    </item>
+    
+    <item>
+      <title>Leetcode07</title>
+      <link>http://wuliaotc.github.io/post/leetcode07/</link>
+      <pubDate>Fri, 09 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://wuliaotc.github.io/post/leetcode07/</guid>
+      
+        <description>
+
+&lt;h2 id=&#34;7-整数反转&#34;&gt;7.整数反转&lt;/h2&gt;
+
+&lt;h4 id=&#34;给出一个-32-位的有符号整数-你需要将这个整数中每位上的数字进行反转&#34;&gt;给出一个 32 位的有符号整数，你需要将这个整数中每位上的数字进行反转。&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;示例 1:
+
+&lt;ul&gt;
+&lt;li&gt;输入: 123&lt;/li&gt;
+&lt;li&gt;输出: 321&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;示例 2:
+
+&lt;ul&gt;
+&lt;li&gt;输入: -123&lt;/li&gt;
+&lt;li&gt;输出: -321&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;示例 3:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;输入: 120&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;输出: 21&lt;/p&gt;
+
+&lt;h3 id=&#34;注意&#34;&gt;注意:&lt;/h3&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;假设我们的环境只能存储得下-32-位的有符号整数-则其数值范围为-231-231-1-请根据这个假设-如果反转后整数溢出那么就返回-0&#34;&gt;假设我们的环境只能存储得下 32 位的有符号整数，则其数值范围为 [−231,  231 − 1]。请根据这个假设，如果反转后整数溢出那么就返回 0。&lt;/h4&gt;
+
+&lt;h4 id=&#34;这是我第一次没有看评论写出来的-当然-没有通过测试&#34;&gt;这是我第一次没有看评论写出来的,当然,没有通过测试&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;    #include&amp;lt;stdio.h&amp;gt;
+    int reverse(int x);
+    int main(){
+        printf(&amp;quot;%d&amp;quot;, reverse(-2147483648));
+        return 0;
+    }
+    //-2147483648~2147483647 10位
+    int reverse(int x){
+        int b[10] = {2, 1, 4, 7, 4, 8, 3, 6, 4, 7}; //这是大于0情况的
+        int a[10] = {0};//初始化,不然当x=0是会出现bug
+        int ifPositive = 1;//这个参数是为了记录该数为正或为负
+        int result = 0;
+        printf(&amp;quot;%d\n&amp;quot;, x);
+        if (x &amp;lt; 0){
+            x=-x;
+            ifPositive = 0;
+        }
+        printf(&amp;quot;%d\n&amp;quot;,x);
+        int i = 0;
+    
+        while (x){ //x不为0
+            a[i] = x % 10;
+            x /= 10;
+            i++;
+        } //出来后i的最大值为10
+        if (i == 10){ //不要判断溢出
+            printf(&amp;quot;判断溢出\n&amp;quot;);
+            for(int j=0;j&amp;lt;10;j++)
+                printf(&amp;quot;a[%d]:%d\n&amp;quot;,j,a[j]);
+            int j = 0;
+            for (; j &amp;lt; 9; j++){ //比较除个位以外的数
+                if (a[j] == b[j]){ //相同,继续循环判断
+                    printf(&amp;quot;continue:%d\n&amp;quot;,j);
+                    continue;
+                }
+                else if (a[j] &amp;gt; b[j]){ //异常 返回
+                    printf(&amp;quot;return:%d\n&amp;quot;, j);
+                     return 0;
+                }
+                else{ //出现一次即代表 可以跳出循环
+                    printf(&amp;quot;break:%d\n&amp;quot;, j);
+                     break;
+                }
+            }
+            if (j == 9){ //继续判断
+                if (a[9] &amp;gt; b[9] - ifPositive){
+                    return 0;
+                }
+            }
+        }
+    
+        result = a[0];
+        for (int j = 1; j &amp;lt; i; j++)
+        {
+            result *= 10;
+            result += a[j];
+        }
+    
+        return ifPositive ? result : -result;
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;在调试过程中我发现测试内容有一个为x-2147483648-终于知道了为什么无法通过测试-当为32位int时-2147483648转为正数也会因为溢出变为2147483647-正向最大-1-2147483648-但是我也不知道这应该怎么解决-有大佬啊知道的话请带带我&#34;&gt;在调试过程中我发现测试内容有一个为x=-2147483648,终于知道了为什么无法通过测试,当为32位int时,-2147483648转为正数也会因为溢出变为2147483647(正向最大)+1=-2147483648,但是我也不知道这应该怎么解决,有大佬啊知道的话请带带我&lt;/h4&gt;
+
+&lt;h4 id=&#34;看了官方的解法我感觉我还是太菜了&#34;&gt;看了官方的解法我感觉我还是太菜了&lt;/h4&gt;
+
+&lt;h5 id=&#34;手动转下c语言&#34;&gt;手动转下c语言&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;    int reverse(int x) {
+        int rev = 0;
+        while (x != 0) {
+            int pop = x % 10;//没啥好说的
+            x /= 10;//没啥好说的
+            if (rev &amp;gt; INT_MAX/10 || (rev == INT_MAX / 10 &amp;amp;&amp;amp; pop &amp;gt; 7)) return 0;
+            if (rev &amp;lt; INT_MIN/10 || (rev == INT_MIN / 10 &amp;amp;&amp;amp; pop &amp;lt; -8)) return 0;//这里这个pop判断很有灵性.
+            rev = rev * 10 + pop;
+        }
+        return rev;
+    }
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;复习一下c语言负数取余的知识&#34;&gt;复习一下c语言负数取余的知识&lt;/h4&gt;
+
+&lt;h5 id=&#34;嗯-比如-7-3-1-就是-7-3-3-1&#34;&gt;嗯 比如-7%3=-1 就是 &lt;em&gt;-7+3+3=-1&lt;/em&gt;&lt;/h5&gt;
+
+&lt;h4 id=&#34;然后写一句提醒自己-这不是汇编-把数字拆分成数组并不会提升速度-我也不太清楚-反正这样写很麻烦-大概性能提升也不明显-可我就是个强迫症-反正下次不这样写了&#34;&gt;然后写一句提醒自己,这不是汇编,把数字拆分成数组并不会提升速度(我也不太清楚,反正这样写很麻烦,大概性能提升也不明显),可我就是个强迫症&amp;hellip;&amp;hellip;,反正下次不这样写了&lt;/h4&gt;
+
+&lt;h4 id=&#34;嘛-感觉官方这个算法很神秘-我可能一时半会想不出来-时间复杂度是o-log-x-空间复杂度是o-1&#34;&gt;嘛 感觉官方这个算法很神秘,我可能一时半会想不出来,时间复杂度是O(log(x)) 空间复杂度是O(1)&lt;/h4&gt;
+
+&lt;h3 id=&#34;先自己写一遍看看-第二轮做的时候先复习8&#34;&gt;先自己写一遍看看 第二轮做的时候先复习8&lt;/h3&gt;
+</description>
+      
+    </item>
+    
+  </channel>
+</rss>

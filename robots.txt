@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: http://wuliaotc.github.io/sitemap.xml
