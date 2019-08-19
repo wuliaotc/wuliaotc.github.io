@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>分类 - wuliaotc 的博客</title>
+  <title>遍历二叉树 - wuliaotc 的博客</title>
   
 
 <meta name="renderer" content="webkit" />
@@ -23,7 +23,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="wuliaotc" />
-  <meta name="description" content="wuliaotc 个人博客" />
+  <meta name="description" content="" />
+
   <meta name="keywords" content="c/c&#43;&#43;, python, linux, life" />
 
 
@@ -34,8 +35,7 @@
 <meta name="generator" content="Hugo 0.57.2" />
 
 
-<link rel="canonical" href="http://wuliaotc.github.io/categories/" />
-<link href="%7balternate%20%7bRSS%20application/rss&#43;xml%20%20index%20alternate%20%20false%20false%20true%20false%20false%200%7d%20/categories/index.xml%20http://wuliaotc.github.io/categories/index.xml%7d" rel="alternate" type="application/rss+xml" title="wuliaotc 的博客" />
+<link rel="canonical" href="http://wuliaotc.github.io/post/%E9%81%8D%E5%8E%86%E4%BA%8C%E5%8F%89%E6%A0%91/" />
 
 
 
@@ -57,18 +57,26 @@
 
 
 
-<meta property="og:title" content="Categories" />
-<meta property="og:description" content="wuliaotc 个人博客" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="http://wuliaotc.github.io/categories/" />
+<meta property="og:title" content="遍历二叉树" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://wuliaotc.github.io/post/%E9%81%8D%E5%8E%86%E4%BA%8C%E5%8F%89%E6%A0%91/" />
+<meta property="article:published_time" content="2019-08-17T16:13:34+08:00" />
+<meta property="article:modified_time" content="2019-08-17T16:13:34+08:00" />
+<meta itemprop="name" content="遍历二叉树">
+<meta itemprop="description" content="">
 
-<meta property="og:updated_time" content="2019-08-17T16:13:34+08:00" />
-<meta itemprop="name" content="Categories">
-<meta itemprop="description" content="wuliaotc 个人博客">
 
+<meta itemprop="datePublished" content="2019-08-17T16:13:34&#43;08:00" />
+<meta itemprop="dateModified" content="2019-08-17T16:13:34&#43;08:00" />
+<meta itemprop="wordCount" content="1902">
+
+
+
+<meta itemprop="keywords" content="c/c&#43;&#43;,数据结构与算法," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Categories"/>
-<meta name="twitter:description" content="wuliaotc 个人博客"/>
+<meta name="twitter:title" content="遍历二叉树"/>
+<meta name="twitter:description" content=""/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -268,7 +276,7 @@
 
       </li>
     
-        <li class="menu-item active">
+        <li class="menu-item">
         
           
           
@@ -327,90 +335,337 @@
     <main id="main" class="main bg-llight">
       <div class="content-wrapper">
         <div id="content" class="content container">
-          
-  
-  
-  
-  
-
-  
-  
+          <article class="post bg-white">
     
-    
-    
-    
-      <section id="archive" class="archive">
-        <div class="archive-title">
-        </div>
-          <div class="collection-title">
-            <h2 class="archive-year">
-              <a href="http://wuliaotc.github.io/categories/leetcode/">
-                分类： leetcode
-              </a>
-            </h2>
+    <header class="post-header">
+      <h1 class="post-title">遍历二叉树</h1>
+      
+      <div class="post-meta">
+        <time datetime="2019-08-17" class="post-time">
+          2019-08-17
+        </time>
+        <div class="post-category">
+            <a href="http://wuliaotc.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"> 数据结构与算法 </a>
+            
           </div>
+        
 
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    <div class="post-content">
+      <h3 id="今年暑假准备复习一下数据结构与算法">今年暑假准备复习一下数据结构与算法</h3>
+
+<h2 id="今天看到二叉树这一节-发现自己对二叉树的遍历的非递归方法还没有掌握-因此写个博客记录一下">今天看到二叉树这一节,发现自己对二叉树的遍历的非递归方法还没有掌握,因此写个博客记录一下</h2>
+
+<pre><code class="language-c">typedef struct node
+{
+    int value;
+    struct node * left;
+    struct node * right;
+} *Binarytree;
+</code></pre>
+
+<h2 id="首先先摆递归版本">首先先摆递归版本</h2>
+
+<h3 id="前序遍历">前序遍历</h3>
+
+<pre><code class="language-c">void r_pre_traverse(Binarytree b)
+{
+    if (b!=NULL)
+    {
+        printf(&quot;%d\n&quot;,b-&gt;value);
+        pre_traverse(b-&gt;left);
+        pre_traverse(b-&gt;right);
+    }
+}
+
+</code></pre>
+
+<h3 id="其他递归遍历方法只是换了个位置而已-就不放在这里占位置了">其他递归遍历方法只是换了个位置而已,就不放在这里占位置了</h3>
+
+<h2 id="非递归循环版本">非递归循环版本</h2>
+
+<h3 id="中序遍历-中序遍历比较简单先写这个">中序遍历(中序遍历比较简单先写这个)</h3>
+
+<h4 id="首先我们来分析一下主要操作">首先我们来分析一下主要操作</h4>
+
+<ol>
+<li>寻找左子树,将当前节点压入栈,直到左子树为空</li>
+<li>从栈中弹出来一个节点,访问他的值(出栈即代表访问),然后切换到他的右子树,将右子树压入栈</li>
+</ol>
+
+<h4 id="循环结束的情况分析">循环结束的情况分析</h4>
+
+<ul>
+<li>节点为空,栈为空
+
+<ol>
+<li>结束循环</li>
+</ol></li>
+<li>节点不为空,栈为空
+
+<ol>
+<li>刚刚开始执行,函数还未进入循环体时</li>
+<li>在循环过程中,栈为空即代表当前节点没有父节点,所以此时执行到根节点,正准备切换到根节点的右子树</li>
+<li>也有可能在循环体的访问最后一个右节点时出现</li>
+</ol></li>
+<li>节点为空,栈不为空
+
+<ol>
+<li>栈不为空代表有父节点,节点为空,说明该节点为<code>st.top()</code>的右子树</li>
+</ol></li>
+<li>节点不为空,栈不为空
+
+<ul>
+<li>这个没什么好说的</li>
+</ul></li>
+</ul>
+
+<h4 id="总体的流程大概是">总体的流程大概是</h4>
+
+<pre><code>while(b!=nullptr||!st.empty()){//右子树为空且栈空时结束
+    while(b!=nullptr){//直到左子树为空
+        执行1;
+    }
+    if(!st.empty()){
+        执行2;
+    }
+    
+}
+</code></pre>
+
+<h4 id="丢代码">丢代码</h4>
+
+<pre><code class="language-c++">void inoder_traverse(Binarytree b)
+{
+    if (b==nullptr)
+        return;
+    stack&lt;Binarytree &gt; st;
+    while (b!=nullptr||!st.empty())
+    {
+        while (b!=nullptr)//节点不为空
+        {
+            st.push(b);//压入当前节点
+            b=b-&gt;left;//切换到左子树
+        }
+        //左子树为空,且栈不为空的情况下切换到父节点
+        if(!st.empty()){
+            b=st.top();
+            st.pop(); 
+
+            //访问节点
+            cout&lt;&lt;b-&gt;value&lt;&lt;endl;
+            //如果有右子树,则切换到右子树,没有的话为空,再次循环时也会正常,所以不需要判断
+            b=b-&gt;right;
+        }
+    }
+}
+</code></pre>
+
+<h3 id="前序遍历-1">前序遍历</h3>
+
+<h4 id="首先我们来分析一下主要操作-1">首先我们来分析一下主要操作</h4>
+
+<ol>
+<li>边访问节点边输出当前节点的值,并把节点存入栈中,然后访问左子树,直到访问节点为空</li>
+<li>如果栈不空,从栈中弹出节点,访问他的右子树</li>
+</ol>
+
+<h4 id="循环结束的情况分析-1">循环结束的情况分析</h4>
+
+<ul>
+<li>感觉情况和中序遍历差不多的样子,就不列举了</li>
+</ul>
+
+<h4 id="总体的流程大概是-1">总体的流程大概是</h4>
+
+<pre><code>while(b!=nullptr||!st.empty()){
+    while(b!=nullptr){
+        执行1;
+    }
+    if(!st.empty()){
+        执行2;
+    }
+}
+</code></pre>
+
+<h4 id="丢代码-1">丢代码</h4>
+
+<pre><code class="language-c++">void pre_traverse(Binarytree b)
+{
+    if (b==nullptr)
+    return;
+    stack&lt;Binarytree &gt; st;
+    while (b!=nullptr||!st.empty())
+    {   
+        while (b!=nullptr)//节点不为空
+        {
+            //访问节点
+            cout&lt;&lt;b-&gt;value&lt;&lt;endl;
+            st.push(b);//压入当前节点
+            b=b-&gt;left;//切换到左子树
+        }
+        //左子树为空,且栈不为空的情况下切换到父节点
+        if(!st.empty()){
+            b=st.top();
+            st.pop();
+            //如果有右子树,则切换到右子树,没有的话为空,再次循环时也会正常,所以不需要判断
+            b=b-&gt;right;
+        }
+    }
+}
+</code></pre>
+
+<h3 id="后序遍历-这个好像有点复杂来着-有两种思路-一种是节点增加一个参数用以确认是否第一次访问-具体方法呢和上面两种差不多-第二种是使用双指针的方法-这里着重讨论第二种">后序遍历,这个好像有点复杂来着(有两种思路,一种是节点增加一个参数用以确认是否第一次访问,具体方法呢和上面两种差不多,第二种是使用双指针的方法,这里着重讨论第二种)</h3>
+
+<h4 id="具体思路"><em>具体思路</em></h4>
+
+<h4 id="利用两个指针-cur和pre进行操作-其中cur用来保存当前节点的指针-pre前一次访问的节点-pre和cur没有确定的父子关系-要保证根结点在左孩子和右孩子访问之后才能访问-因此对于任一结点p-先将其入栈">利用两个指针 cur和pre进行操作,其中cur用来保存当前节点的指针,pre前一次访问的节点(pre和cur没有确定的父子关系).要保证根结点在左孩子和右孩子访问之后才能访问，因此对于任一结点P，先将其入栈。</h4>
+
+<ol>
+<li>如果P不存在左孩子和右孩子，则可以直接访问它；</li>
+<li>或者P存在左孩子或者右孩子，但是其左孩子和右孩子都已被访问过了，则同样可以直接访问该结点。</li>
+<li>若非上述两种情况，则将P的右孩子和左孩子依次入栈，这样就保证了每次取栈顶元素的时候，左孩子在右孩子前面被访问，左孩子和右孩子都在根结点前面被访问。</li>
+</ol>
+
+<h4 id="首先我们来分析一下主要操作-2">首先我们来分析一下主要操作</h4>
+
+<ol>
+<li>访问节点 直接将节点压入栈中
+
+<ul>
+<li>如果节点不存在子树,直接访问</li>
+<li>如果节点存在节点,待按照顺序访问子节点后再从栈中弹出父节点进行访问</li>
+</ul></li>
+</ol>
+
+<h4 id="循环结束的情况分析-循环开始前将根节点压入">循环结束的情况分析(循环开始前将根节点压入)</h4>
+
+<ul>
+<li>节点为空,栈为空
+
+<ol>
+<li>空树,直接过滤</li>
+</ol></li>
+<li>节点不为空,栈为空
+
+<ol>
+<li>根节点输出完毕,结束循环</li>
+</ol></li>
+<li>节点为空,栈不为空
+
+<ol>
+<li>右端子树访问完毕,</li>
+</ol></li>
+<li>节点不为空,栈不为空
+
+<ul>
+<li>这个没什么好说的</li>
+</ul></li>
+</ul>
+
+<h4 id="总体的流程大概是-2">总体的流程大概是</h4>
+
+<pre><code class="language-c++">
+while(!st.empty()){
+    if((cur-&gt;left==nullptr&amp;&amp;cur-&gt;right==nullptr)||
+        ((pre!=nullptr)&amp;&amp;(pre==cur-&gt;left||pre==cur-&gt;right))){//节点不存在子树,或者子树已经都被访问过了
+        执行1;
+    }
+    else{
+        执行2;
+    }
+}
+</code></pre>
+
+<h4 id="丢代码-2">丢代码</h4>
+
+<pre><code class="language-c++">void postorder_traversal(Binarytree b)
+{
+    if (b==nullptr)
+        return;
+    Binarytree cur;//是指针哦 保存当前访问的节点
+    Binarytree pre=nullptr;
+    stack&lt;Binarytree &gt; st;
+    st.push(b);//先把根节点压入堆栈
+    while (!st.empty())//堆栈不空,堆栈空的时候表示根节点已经被访问了
+    {
+        cur=st.top();//当前访问的节点为栈顶节点 不弹出
+        //节点没有子树
+        if ((cur-&gt;left==nullptr&amp;&amp;cur-&gt;right==nullptr)||
+        (pre!=nullptr&amp;&amp;(pre==cur-&gt;left||pre==cur-&gt;right)))//或者节点的子树都被访问过了,即上一个访问的节点是当前节点的子节点
+        {
+            //访问当前节点
+            cout&lt;&lt;cur-&gt;value&lt;&lt;endl;
+            st.pop();//弹出堆栈 弹出就代表访问了该节点
+
+            pre=cur;//为下一次访问做准备
+        }
+        else//存在还未访问的子树，进行子树的访问
+        {
+
+            if (cur-&gt;left!=nullptr)
+                st.push(cur-&gt;left);
+            if (cur-&gt;right!=nullptr)
+                st.push(cur-&gt;right);
+        }
+    }
+}
+</code></pre>
+
+<p><em>这个算法的实现我参考了这个大佬的博客:</em><a href="https://www.cnblogs.com/dolphin0520/archive/2011/08/25/2153720.html">二叉树的非递归遍历</a></p>
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="http://wuliaotc.github.io/tags/c/c&#43;&#43;/">c/c&#43;&#43;</a>
+          <a href="http://wuliaotc.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a>
           
-            <div class="archive-post">
-              <time datetime="2019-08-14" class="archive-post-time">
-                2019-08-14
-              </time>
-              <span class="archive-post-title">
-                <a href="/post/leetcode09/" class="archive-post-link">
-                  Leetcode09
-                </a>
-              </span>
-            </div>
-          
-            <div class="archive-post">
-              <time datetime="2019-08-09" class="archive-post-time">
-                2019-08-09
-              </time>
-              <span class="archive-post-title">
-                <a href="/post/leetcode07/" class="archive-post-link">
-                  Leetcode07
-                </a>
-              </span>
-            </div>
-          
-          
-      </section>
-    
-    
-    
-    
-    
-      <section id="archive" class="archive">
-        <div class="archive-title">
         </div>
-          <div class="collection-title">
-            <h2 class="archive-year">
-              <a href="http://wuliaotc.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">
-                分类： 数据结构与算法
-              </a>
-            </h2>
-          </div>
 
-          
-            <div class="archive-post">
-              <time datetime="2019-08-17" class="archive-post-time">
-                2019-08-17
-              </time>
-              <span class="archive-post-title">
-                <a href="/post/%E9%81%8D%E5%8E%86%E4%BA%8C%E5%8F%89%E6%A0%91/" class="archive-post-link">
-                  遍历二叉树
-                </a>
-              </span>
-            </div>
-          
-          
-      </section>
-    
-    
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/leetcode09/">
+            <span class="next-text nav-default">Leetcode09</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
 
   
   
 
+  
+  
 
         </div>
       </div>
