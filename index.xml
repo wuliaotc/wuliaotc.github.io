@@ -6,7 +6,7 @@
     <description>Recent content on wuliaotc 的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 17 Aug 2019 16:13:34 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 01 Sep 2019 21:57:49 +0800</lastBuildDate>
     
         <atom:link href="http://wuliaotc.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -30,6 +30,74 @@
 &lt;/ul&gt;
 
 &lt;p&gt;Learn more and contribute on &lt;a href=&#34;https://github.com/gohugoio&#34;&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+</description>
+      
+    </item>
+    
+    <item>
+      <title>SGI_STL中std::list::sort的实现细节</title>
+      <link>http://wuliaotc.github.io/post/sgi_stl%E4%B8%ADstdlistsort%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82/</link>
+      <pubDate>Sun, 01 Sep 2019 21:57:49 +0800</pubDate>
+      
+      <guid>http://wuliaotc.github.io/post/sgi_stl%E4%B8%ADstdlistsort%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82/</guid>
+      
+        <description>
+
+&lt;h3 id=&#34;最近在看侯捷老师的-stl源码剖析-从中收获了很多-书中并没有解释list-sort的每步的目的-和具体分析-我决定写一篇文章记录一下有关序列式容器list的sort算法的实现细节&#34;&gt;最近在看侯捷老师的&amp;lt;&lt;STL源码剖析&gt;&amp;gt;，从中收获了很多。书中并没有解释list::sort的每步的目的，和具体分析，我决定写一篇文章记录一下有关序列式容器list的sort算法的实现细节。&lt;/h3&gt;
+
+&lt;h3 id=&#34;有一个要注意的地方-书中人为sort是quick-sort-即快速排序算法-实际上是错的-应该是merge-归并排序算法&#34;&gt;有一个要注意的地方，书中人为sort是quick sort 即快速排序算法，实际上是错的，应该是merge 归并排序算法。&lt;/h3&gt;
+
+&lt;h3 id=&#34;下面摆一下源码-并注释一下我的理解&#34;&gt;下面摆一下源码，并注释一下我的理解。&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-c++&#34;&gt;template &amp;lt;class T,class Alloc&amp;gt;
+void list&amp;lt;T, Alloc&amp;gt;::sort()
+{
+    //以下是书中自带的注释
+    //
+    //以下判断，如果是空链表，或仅有一个元素,就不进行任何操作
+    //使用 size() == 0 || size() == 1 来判断,虽然也可以,但是比较慢
+    //
+    //以上是书中自带的注释
+    //SGI STL中 list 是使用双向环链表实现的，其中链表的尾部是一个空节点，即head-&amp;gt;pre是一个空节点，指向尾部。
+    if(node-&amp;gt;next == node || sink_type(node-&amp;gt;next)-&amp;gt;next == node)
+        return;
+    //以下是书中自带的注释
+    //
+    //一些新的lists，作为中介数据的存放区
+    //
+    //以上是书中自带的注释
+    list&amp;lt;T, Alloc&amp;gt; carry;
+    list&amp;lt;T, Alloc&amp;gt; counter[64];
+    int fill = 0;
+    //在下列循环中,每次最后都将全部数据合并到counter[fill]，然后执行++fill
+    /*
+        外层循环每次循环从list头部取出一个节点放入carry中，
+            内层循环每次循环将carry合并入counter[i]后放回carry，能够保证清空counter[i]，然后++i
+        外层循环能够保证每次执行完carry都会被清空，内容放入counter[fill]
+    */
+    while(!empty())
+    {
+        //将链表中的begin()插入到carry.begin()的位置
+        carry.splice(carry.begin(), *this, begin)//常数级操作
+        int i = 0;//常数级操作
+        //要求是i&amp;lt;fill 并且counter[i]不能为空，保证有数据可以取出
+        while(i &amp;lt; fill &amp;amp;&amp;amp; !counter[i].empty())
+        {
+            counter[i].merge(carry);//m+n次操作
+            carry.swap(counter[i++]);//常量级
+        }
+        //清空carry
+        carry.swap(counter[i]);//常量级
+        if (i == fill) ++fill;//常量级 i==fill 这个判断是为因 ！counter[i].empty(),即出现counter[i]为空的情况下准备的
+    }
+    //因为在merge过程中，list会为空，因此
+    for (int i== 1;i &amp;lt; fill; i++)
+        counter[i].merge(counter[i-1]);
+    swap(counter[fill-1];)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;在上述算法中-counter-fill-可以储存-2-fill-1-个节点-也就是list的最大容量为-2-64-1&#34;&gt;在上述算法中 counter[fill]可以储存 2^fill-1 个节点，也就是list的最大容量为 2^64-1&lt;/h3&gt;
 </description>
       
     </item>
