@@ -9,6 +9,55 @@
   </url>
   
   <url>
+    <loc>https://wuliaotc.github.io/tags/c/</loc>
+    <lastmod>2020-05-21T00:06:24+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://wuliaotc.github.io/tags/c&#43;&#43;/</loc>
+    <lastmod>2020-05-21T00:06:24+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://wuliaotc.github.io/tags/elf/</loc>
+    <lastmod>2020-05-21T00:06:24+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://wuliaotc.github.io/post/elf_analysis/elf_analysis/</loc>
+    <lastmod>2020-05-21T00:06:24+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://wuliaotc.github.io/tags/gcc/</loc>
+    <lastmod>2020-05-21T00:06:24+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://wuliaotc.github.io/post/</loc>
+    <lastmod>2020-05-21T00:06:24+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://wuliaotc.github.io/tags/</loc>
+    <lastmod>2020-05-21T00:06:24+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://wuliaotc.github.io/categories/</loc>
     <lastmod>2020-03-19T13:06:44+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -37,34 +86,6 @@
   </url>
   
   <url>
-    <loc>https://wuliaotc.github.io/post/</loc>
-    <lastmod>2020-03-19T13:06:44+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://wuliaotc.github.io/tags/</loc>
-    <lastmod>2020-03-19T13:06:44+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://wuliaotc.github.io/post/%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/</loc>
-    <lastmod>2019-09-26T18:35:48+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://wuliaotc.github.io/tags/c&#43;&#43;/</loc>
-    <lastmod>2019-09-01T21:57:49+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>https://wuliaotc.github.io/post/sgi_stl%E4%B8%ADstdlistsort%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82/</loc>
     <lastmod>2019-09-01T21:57:49+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -86,13 +107,6 @@
   </url>
   
   <url>
-    <loc>https://wuliaotc.github.io/post/list%E7%9A%84transfer%E6%93%8D%E4%BD%9C/list%E7%9A%84transfer%E6%93%8D%E4%BD%9C/</loc>
-    <lastmod>2019-08-23T15:46:48+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>https://wuliaotc.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2019-08-17T16:13:34+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -109,20 +123,6 @@
   <url>
     <loc>https://wuliaotc.github.io/post/%E9%81%8D%E5%8E%86%E4%BA%8C%E5%8F%89%E6%A0%91/</loc>
     <lastmod>2019-08-17T16:13:34+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://wuliaotc.github.io/post/bst/</loc>
-    <lastmod>2019-08-17T09:30:16+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://wuliaotc.github.io/post/abouttree/</loc>
-    <lastmod>2019-08-16T17:03:56+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

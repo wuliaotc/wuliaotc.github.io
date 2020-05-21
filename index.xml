@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>wuliaotc 的博客</title>
@@ -32,13 +32,914 @@
     </item>
     
     <item>
-      <title>Posts</title>
-      <link>https://wuliaotc.github.io/post/</link>
+      <title>ELF_analysis</title>
+      <link>https://wuliaotc.github.io/post/elf_analysis/elf_analysis/</link>
+      <pubDate>Thu, 21 May 2020 00:06:24 +0800</pubDate>
+      
+      <guid>https://wuliaotc.github.io/post/elf_analysis/elf_analysis/</guid>
+      
+        <description>&lt;h2 id=&#34;elf文件分析&#34;&gt;ELF文件分析&lt;/h2&gt;
+&lt;p&gt;首先我们写一个样例程序&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;printf&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;format, ...);
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; global_init_var &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;84&lt;/span&gt;;&lt;span style=&#34;color:#75715e&#34;&gt;//全局
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; global_unint_var;
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;func1&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; i) { printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, i); }
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt;) {
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;static&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; static_var &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;85&lt;/span&gt;;&lt;span style=&#34;color:#75715e&#34;&gt;//静态
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#66d9ef&#34;&gt;static&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; static_var2;
+
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; a &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;&lt;span style=&#34;color:#75715e&#34;&gt;//局部
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; b;
+
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;static&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; c &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;&lt;span style=&#34;color:#75715e&#34;&gt;//常量
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;	&lt;span style=&#34;color:#66d9ef&#34;&gt;static&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; d &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
+	(&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt;)d;
+
+	func1(static_var &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; static_var2 &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; a &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; b);
+
+	&lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; a;
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后使用&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;gcc -c simpleSection.c
+objdump -h simpleSection.o 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://wuliaotc.github.io/post/ELF_analysis/objdump.png&#34; alt=&#34;avatar&#34;&gt;
+&lt;img src=&#34;https://wuliaotc.github.io/post/ELF_analysis/struct.drawio.svg&#34; alt=&#34;avatar&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;使用objdump挖掘代码段内容 -d代表反汇编
+
+objdump -s -d simpleSection.o 
+
+simpleSection.o：     文件格式 elf64-x86-64
+
+.text 區段的內容： 指令内容
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0000&lt;/span&gt; 554889e5 4883ec10 897dfc8b 45fc89c6  UH..H....&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;..E...
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0010&lt;/span&gt; 488d3d00 000000b8 &lt;span style=&#34;color:#ae81ff&#34;&gt;00000000&lt;/span&gt; e8000000  H.&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;.............
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0020&lt;/span&gt; 0090c9c3 554889e5 4883ec10 c745f801  ....UH..H....E..
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0030&lt;/span&gt; 0000008b &lt;span style=&#34;color:#ae81ff&#34;&gt;15000000&lt;/span&gt; 008b0500 &lt;span style=&#34;color:#ae81ff&#34;&gt;00000001&lt;/span&gt;  ................
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0040&lt;/span&gt; c28b45f8 01c28b45 fc01d089 c7e80000  ..E....E........
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0050&lt;/span&gt; 00008b45 f8c9c3                      ...E...         
+.data 區段的內容：存放非0初始化的全局变量和静态变量
+ 分别对应global_init_var和static_var
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0000&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;54000000&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;55000000&lt;/span&gt;                    T...U...        
+.rodata 區段的內容：对应 &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d\n&amp;#34;&lt;/span&gt; 和两个static int 证明这里int为32位
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0000&lt;/span&gt; 25640a00 &lt;span style=&#34;color:#ae81ff&#34;&gt;01000000&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;01000000&lt;/span&gt;           %d..........    
+.comment 區段的內容：
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0000&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00474343&lt;/span&gt; 3a202847 4e552920 31302e31  .GCC: &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;GNU&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 10.1
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0010&lt;/span&gt; 2e3000                               .0.             
+.eh_frame 區段的內容：
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0000&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;14000000&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00000000&lt;/span&gt; 017a5200 &lt;span style=&#34;color:#ae81ff&#34;&gt;01781001&lt;/span&gt;  .........zR..x..
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0010&lt;/span&gt; 1b0c0708 &lt;span style=&#34;color:#ae81ff&#34;&gt;90010000&lt;/span&gt; 1c000000 1c000000  ................
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0020&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00000000&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;24000000&lt;/span&gt; 00410e10 8602430d  ....$....A....C.
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0030&lt;/span&gt; 065f0c07 &lt;span style=&#34;color:#ae81ff&#34;&gt;08000000&lt;/span&gt; 1c000000 3c000000  ._..........&amp;lt;...
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0040&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00000000&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;33000000&lt;/span&gt; 00410e10 8602430d  ....3....A....C.
+ &lt;span style=&#34;color:#ae81ff&#34;&gt;0050&lt;/span&gt; 066e0c07 &lt;span style=&#34;color:#ae81ff&#34;&gt;08000000&lt;/span&gt;                    .n......        
+
+.text 區段的反組譯：
+
+&lt;span style=&#34;color:#ae81ff&#34;&gt;0000000000000000&lt;/span&gt; &amp;lt;_Z5func1i&amp;gt;:
+   0:   &lt;span style=&#34;color:#ae81ff&#34;&gt;55&lt;/span&gt;                      push   %rbp
+   1:   &lt;span style=&#34;color:#ae81ff&#34;&gt;48&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;89&lt;/span&gt; e5                mov    %rsp,%rbp
+   4:   &lt;span style=&#34;color:#ae81ff&#34;&gt;48&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;83&lt;/span&gt; ec &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;             sub    $0x10,%rsp
+   8:   &lt;span style=&#34;color:#ae81ff&#34;&gt;89&lt;/span&gt; 7d fc                mov    %edi,-0x4&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;%rbp&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+   b:   8b &lt;span style=&#34;color:#ae81ff&#34;&gt;45&lt;/span&gt; fc                mov    -0x4&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;%rbp&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;,%eax
+   e:   &lt;span style=&#34;color:#ae81ff&#34;&gt;89&lt;/span&gt; c6                   mov    %eax,%esi
+  10:   &lt;span style=&#34;color:#ae81ff&#34;&gt;48&lt;/span&gt; 8d 3d &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt;    lea    0x0&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;%rip&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;,%rdi        &lt;span style=&#34;color:#75715e&#34;&gt;# 17 &amp;lt;_Z5func1i+0x17&amp;gt;&lt;/span&gt;
+  17:   b8 &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt;          mov    $0x0,%eax
+  1c:   e8 &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt;          callq  &lt;span style=&#34;color:#ae81ff&#34;&gt;21&lt;/span&gt; &amp;lt;_Z5func1i+0x21&amp;gt;
+  21:   &lt;span style=&#34;color:#ae81ff&#34;&gt;90&lt;/span&gt;                      nop
+  22:   c9                      leaveq 
+  23:   c3                      retq   
+
+&lt;span style=&#34;color:#ae81ff&#34;&gt;0000000000000024&lt;/span&gt; &amp;lt;main&amp;gt;:
+  24:   &lt;span style=&#34;color:#ae81ff&#34;&gt;55&lt;/span&gt;                      push   %rbp
+  25:   &lt;span style=&#34;color:#ae81ff&#34;&gt;48&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;89&lt;/span&gt; e5                mov    %rsp,%rbp
+  28:   &lt;span style=&#34;color:#ae81ff&#34;&gt;48&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;83&lt;/span&gt; ec &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;             sub    $0x10,%rsp
+  2c:   c7 &lt;span style=&#34;color:#ae81ff&#34;&gt;45&lt;/span&gt; f8 &lt;span style=&#34;color:#ae81ff&#34;&gt;01&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt;    movl   $0x1,-0x8&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;%rbp&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+  33:   8b &lt;span style=&#34;color:#ae81ff&#34;&gt;15&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt;       mov    0x0&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;%rip&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;,%edx        &lt;span style=&#34;color:#75715e&#34;&gt;# 39 &amp;lt;main+0x15&amp;gt;&lt;/span&gt;
+  39:   8b &lt;span style=&#34;color:#ae81ff&#34;&gt;05&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt;       mov    0x0&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;%rip&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;,%eax        &lt;span style=&#34;color:#75715e&#34;&gt;# 3f &amp;lt;main+0x1b&amp;gt;&lt;/span&gt;
+  3f:   &lt;span style=&#34;color:#ae81ff&#34;&gt;01&lt;/span&gt; c2                   add    %eax,%edx
+  41:   8b &lt;span style=&#34;color:#ae81ff&#34;&gt;45&lt;/span&gt; f8                mov    -0x8&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;%rbp&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;,%eax
+  44:   &lt;span style=&#34;color:#ae81ff&#34;&gt;01&lt;/span&gt; c2                   add    %eax,%edx
+  46:   8b &lt;span style=&#34;color:#ae81ff&#34;&gt;45&lt;/span&gt; fc                mov    -0x4&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;%rbp&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;,%eax
+  49:   &lt;span style=&#34;color:#ae81ff&#34;&gt;01&lt;/span&gt; d0                   add    %edx,%eax
+  4b:   &lt;span style=&#34;color:#ae81ff&#34;&gt;89&lt;/span&gt; c7                   mov    %eax,%edi
+  4d:   e8 &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;00&lt;/span&gt;          callq  &lt;span style=&#34;color:#ae81ff&#34;&gt;52&lt;/span&gt; &amp;lt;main+0x2e&amp;gt;
+  52:   8b &lt;span style=&#34;color:#ae81ff&#34;&gt;45&lt;/span&gt; f8                mov    -0x8&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;%rbp&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;,%eax
+  55:   c9                      leaveq 
+  56:   c3                      retq   
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用readelf 查看文件&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;readelf  -h simpleSection.o 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img src=&#34;https://wuliaotc.github.io/post/ELF_analysis/readelf.png&#34; alt=&#34;avatar&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;符号表&#34;&gt;符号表&lt;/h3&gt;
+&lt;p&gt;符号是链接的接口,如果目标文件B要使用目标文件A中的函数&amp;quot;foo,我们称目标文件A定义了foo,称目标文件B引用了&amp;quot;foo&amp;rdquo;。&lt;/p&gt;
+&lt;h4 id=&#34;符号的种类&#34;&gt;符号的种类&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;定义在本目标文件的全局符号,可以被其他文件引用 如 main&lt;/li&gt;
+&lt;li&gt;本目标引用而未定义的全局符号,称为外部符号 如 printf&lt;/li&gt;
+&lt;li&gt;段名,值为段的起始地址,如.text&lt;/li&gt;
+&lt;li&gt;局部符号,仅在编译单元内可见,用与分析coredump文件,对于链接过程无用&lt;/li&gt;
+&lt;li&gt;行号信息,即目标文件指令与源代码中代码行的对应关系&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;使用nm查看符号表&#34;&gt;使用nm查看符号表&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;nm simpleSection.o 
+0000000000000000 D global_init_var
+                 U _GLOBAL_OFFSET_TABLE_
+0000000000000000 B global_unint_var
+0000000000000024 T main
+0000000000000000 T _Z5func1i
+                 U _Z6printfPKcz
+0000000000000004 d _ZZ4mainE10static_var
+0000000000000004 b _ZZ4mainE11static_var2
+0000000000000004 r _ZZ4mainE1c
+0000000000000008 r _ZZ4mainE1d
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;使用readelf查看符号表&#34;&gt;使用readelf查看符号表&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;readelf -s simpleSection.o                                                             
+
+Symbol table &#39;.symtab&#39; contains 19 entries:
+  編號:    值             大小 類型    約束   版本     索引名稱
+     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS simpleSection.c
+     2: 0000000000000000     0 SECTION LOCAL  DEFAULT    1 
+     3: 0000000000000000     0 SECTION LOCAL  DEFAULT    3 
+     4: 0000000000000000     0 SECTION LOCAL  DEFAULT    4 
+     5: 0000000000000000     0 SECTION LOCAL  DEFAULT    5 
+     6: 0000000000000004     4 OBJECT  LOCAL  DEFAULT    3 _ZZ4mainE10static_var
+     7: 0000000000000004     4 OBJECT  LOCAL  DEFAULT    4 _ZZ4mainE11static_var2
+     8: 0000000000000004     4 OBJECT  LOCAL  DEFAULT    5 _ZZ4mainE1c
+     9: 0000000000000008     4 OBJECT  LOCAL  DEFAULT    5 _ZZ4mainE1d
+    10: 0000000000000000     0 SECTION LOCAL  DEFAULT    7 
+    11: 0000000000000000     0 SECTION LOCAL  DEFAULT    8 
+    12: 0000000000000000     0 SECTION LOCAL  DEFAULT    6 
+    13: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    3 global_init_var
+    14: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    4 global_unint_var
+    15: 0000000000000000    36 FUNC    GLOBAL DEFAULT    1 _Z5func1i
+    16: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND _GLOBAL_OFFSET_TABLE_ 未定义,说明这是外部符号
+    17: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND _Z6printfPKcz          未定义,说明这是外部符号
+    18: 0000000000000024    51 FUNC    GLOBAL DEFAULT    1 main
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;extern-c的作用&#34;&gt;extern &amp;ldquo;c&amp;quot;的作用&lt;/h2&gt;
+&lt;p&gt;我们可以看到,我们视同c++ 编译后,变量和函数前都会有一些莫名其妙的东西比如 _ZZ4mainE11static_var2
+一般来说,_Z开头说明使用了c++的规范
+我们可以做一个小实验&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#include&amp;lt;stdio.h&amp;gt;
+ 
+namespace names{
+|   int var=3;
+}
+
+extern &amp;quot;C&amp;quot; int _name;
+
+int main(){
+    printf(&amp;quot;%d\n&amp;quot;,_name);
+    return 0;
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;编译后使用readelf查看他的符号表,其中有这样一条
+4 OBJECT  GLOBAL DEFAULT    3 _ZN5names3varE
+0 NOTYPE  GLOBAL DEFAULT    UND _name
+可以看到,我们有一个 UND即未定义的_name
+还有一个_ZN5names3varE,很明显这个是c++的命名规范
+我们将代码修改一下,将_name,修改为_ZN5names3varE
+然后执行,发现输出的正是var的值,这说明extern &amp;ldquo;C&amp;quot;的作用只是改变变量的命名规范&lt;/p&gt;
+&lt;h3 id=&#34;注意c语言不支持extern-c&#34;&gt;注意c语言不支持extern &amp;ldquo;c&amp;rdquo;&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;我们一般这样使用&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;#ifdef __cplusplus
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;extenrn &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;C&amp;#34;&lt;/span&gt;{
+&lt;span style=&#34;color:#75715e&#34;&gt;#endif
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;();
+&lt;span style=&#34;color:#75715e&#34;&gt;#ifdef __cplusplus
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;}
+&lt;span style=&#34;color:#75715e&#34;&gt;#endif
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;强符号与弱符号&#34;&gt;强符号与弱符号&lt;/h3&gt;
+&lt;p&gt;我们有时编译时会遇到 multiple definition of &amp;ldquo;&amp;quot;,这种多重定义问题
+比如在两个不同的文件定义名称相同的全局变量&lt;/p&gt;
+&lt;p&gt;这主要是因为编译器区分强符号和弱符号(针对定义,不针对引用)
+对于gcc来说,函数和初始化了的全局变量为强符号,未初始化的为弱符号&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;extern&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; ext;
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; weak;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; strong&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
+__attribute__((weak)) weak2&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;;
+
+&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;(){
+
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中extern int并非定义,而是对其他符号的引用,既不是强符号也不是弱符号
+stong和mian()为强符号
+我们也可以用__attribute__() 来指定符号强弱
+强弱符号的链接使用如下规则&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;不允许强符号重定义,这就是多重定义的原因&lt;/li&gt;
+&lt;li&gt;如果一个符号在某个文件中是强符号,在其他文件里都是弱符号,那么选择强符号&lt;/li&gt;
+&lt;li&gt;如果一个符号在所有目标文件都是弱符号,那么选择其中占用空间最大的
+特别注意,以上规则适用于链接期,不要扯到文件内的名称空间问题&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;弱引用和强引用&#34;&gt;弱引用和强引用&lt;/h3&gt;
+&lt;p&gt;当我们所看到的对外部目标文件的符号引用在目标文件中被链接成可执行文件时,他们必须要被正确决议,如果没有找到该符号定义,连接器就会报符号未定义的错误,这种被称为强引用
+还有另外一种叫弱引用,在处理弱引用时,如果该符号有定义,则连接器将该符号的引用决议,如果未定义,那么就和强引用的表现一样了
+比如,弱引用可以实现功能的裁剪&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;foo&lt;/span&gt;() __attribute__((weak));
+&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;()
+{
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;(foo)
+                foo();
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这样是可以通过编译和链接的,由于foo()是弱引用,那么它使可以被强引用覆盖的,这样就能实现foo()函数的功能剪裁,可以在链接期来决定foo()函数是什么,会不会运行&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>Linux入门</title>
+      <link>https://wuliaotc.github.io/post/linux%E5%85%A5%E9%97%A8/linux%E5%85%A5%E9%97%A8/</link>
       <pubDate>Thu, 19 Mar 2020 13:06:44 +0800</pubDate>
       
-      <guid>https://wuliaotc.github.io/post/</guid>
+      <guid>https://wuliaotc.github.io/post/linux%E5%85%A5%E9%97%A8/linux%E5%85%A5%E9%97%A8/</guid>
       
-        <description></description>
+        <description>&lt;h1 id=&#34;linux入门&#34;&gt;linux入门&lt;/h1&gt;
+&lt;h2 id=&#34;linux文件结构&#34;&gt;linux文件结构&lt;/h2&gt;
+&lt;p&gt;典型的linux目录如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/
+├── bin bin是Binary（二进制程序）的缩写, 这个目录存放着最经常使用的命令
+├── boot 
+├── dev dev是Device(设备)的缩写, 该目录下存放的是Linux的外部设备，在Linux中访问设备的方式和访问文件的方式是相同的。
+├── etc 这个目录用来存放所有的系统管理所需要的配置文件和子目录。
+├── home 用户目录
+├── proc
+├── root
+├── run
+├── sbin
+├── srv
+├── sys
+├── tmp 临时目录，通常是tmpfs，该目录中的文件实际上存储在内存中
+├── usr
+└── var
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;linux中目录是以树的结构出现的，所有目录都是以/根目录为根的一颗树&lt;/p&gt;
+&lt;h2 id=&#34;一切皆文件的思想&#34;&gt;一切皆文件的思想&lt;/h2&gt;
+&lt;p&gt;一切皆文件的思想是指几乎所有（目录、字符设备、块设备、套接字、打印机、进程、线程、管道等）都被映射到了linux文件树上，成为一个树上的一个节点。&lt;/p&gt;
+&lt;h3 id=&#34;举个例子&#34;&gt;举个例子：&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;/dev/sda  这是我的硬盘，在linux下被映射为了sd(x)
+/dev/sda1 这是上述硬盘的第一个分区
+/dev/sda2 这是上述硬盘的第二个分区
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;linux文件权限&#34;&gt;linux文件权限&lt;/h2&gt;
+&lt;p&gt;linux是一个多用户多任务的操作系统，这意味着一个linux系统可以有多个用户同时登录并且同时执行多个任务。那么文件权限就是一个很重要的功能。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;使用ls -l命令
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img src=&#34;https://wuliaotc.github.io/post/linux%E5%85%A5%E9%97%A8/%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90.png&#34; alt=&#34;avatar&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;我们以图中shc-为例&#34;&gt;我们以图中sh.c 为例&lt;/h3&gt;
+&lt;p&gt;sh.c的权限为&lt;code&gt;- rw- r-- r--&lt;/code&gt;(我们将它拆成四个部分,第一部分一个字符,其余部分3个字符)&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;第一部分的字符指定了该文件的类别,文件类型主要有以下几种:
+- 普通文件
+d 目录
+l 链接文件
+b 块特殊设备
+c 特殊设备文件 
+s 套接字文件
+p 管道文件
+
+其余三个部分代表了文件的权限:
+主人的权限                   rw-
+用户组(文件的拥有组)的权限     r--
+其他人的权限                 r--
+
+其中 r代表read 可读;w代表write 可写;x代表可执行
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;同时 文件权限也可以用数字(3个二进制值)来表示
+权限|值
+&amp;ndash;|:&amp;ndash;:
+r|4|
+w|2|
+x|1|
+比如上述权限可表示为 644 (4+2)(4)(4)&lt;/p&gt;
+&lt;h3 id=&#34;简单使用chmod修改文件权限简单点使用数字模式&#34;&gt;简单使用chmod修改文件权限(简单点使用数字模式)&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;chmod 666 sh.c
+-rw-rw-rw-  1 andy andy  6129  1月 18 22:00 sh.c
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;shell简介&#34;&gt;shell简介&lt;/h2&gt;
+&lt;p&gt;Unix shell，一种壳层与命令行界面，是UNIX操作系统下传统的用户和计算机的交互界面。用户直接输入命令来执行各种各样的任务。&lt;/p&gt;
+&lt;h3 id=&#34;cd命令&#34;&gt;cd命令&lt;/h3&gt;
+&lt;p&gt;当一个终端仿真器启动时，会默认工作目录在启动它的用户的主目录&lt;code&gt;/home/userName&lt;/code&gt;，通常被简写为&lt;code&gt;~&lt;/code&gt;。通过cd 命令，我们可以切换当前目录。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cd / 这个命令会让我们切换到根目录
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;ls命令&#34;&gt;ls命令&lt;/h3&gt;
+&lt;p&gt;ls命令用于列出某个目录下的文件或目录（当然还有很多扩展用途）&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ls -a 显示所有类型的文件或目录
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;特殊目录-和&#34;&gt;特殊目录 &lt;code&gt;.&lt;/code&gt;和&lt;code&gt;..&lt;/code&gt;&lt;/h4&gt;
+&lt;p&gt;&lt;code&gt;.&lt;/code&gt;目录代表当前工作目录，&lt;code&gt;..&lt;/code&gt;代表当前工作目录的父目录&lt;/p&gt;
+&lt;h4 id=&#34;链接-略&#34;&gt;链接 略&lt;/h4&gt;
+&lt;h3 id=&#34;环境变量-这个我们应该了解过-略-维基百科-环境变量httpszhwikipediaorgwikie78eafe5a283e58f98e9878f&#34;&gt;环境变量 这个我们应该了解过 略 &lt;a href=&#34;https://zh.wikipedia.org/wiki/%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F&#34;&gt;维基百科-环境变量&lt;/a&gt;&lt;/h3&gt;
+&lt;h2 id=&#34;man&#34;&gt;man&lt;/h2&gt;
+&lt;p&gt;man是一个很重要的文档库，里面拥有丰富的帮助文档。man中几乎包含你所需要的所有文档。具体包括如下章节：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;可执行程序或 shell 命令&lt;/li&gt;
+&lt;li&gt;系统调用(内核提供的函数)&lt;/li&gt;
+&lt;li&gt;库调用(程序库中的函数)&lt;/li&gt;
+&lt;li&gt;特殊文件(通常位于 /dev)&lt;/li&gt;
+&lt;li&gt;File formats and conventions, e.g. /etc/passwd&lt;/li&gt;
+&lt;li&gt;游戏（甚至有游戏教程）&lt;/li&gt;
+&lt;li&gt;杂项(包括宏包和规范，如 man(7)，groff(7))&lt;/li&gt;
+&lt;li&gt;系统管理命令(通常只针对 root 用户)&lt;/li&gt;
+&lt;li&gt;内核例程 [非标准&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;使用man&#34;&gt;使用man&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;man man #man （命令名）
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img src=&#34;https://wuliaotc.github.io/post/linux%E5%85%A5%E9%97%A8/man_man.png&#34; alt=&#34;avatar&#34;&gt;
+上图就是执行该命令的结果,一般会在&lt;/p&gt;
+&lt;h4 id=&#34;小节名称通常包括&#34;&gt;小节名称通常包括&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;NAME&lt;/li&gt;
+&lt;li&gt;概述(SYNOPSIS)&lt;/li&gt;
+&lt;li&gt;配置(CONFIGURATION)&lt;/li&gt;
+&lt;li&gt;描述(DESCRIPTION)&lt;/li&gt;
+&lt;li&gt;选项(OPTIONS)&lt;/li&gt;
+&lt;li&gt;退出状态(EXIT STATUS)&lt;/li&gt;
+&lt;li&gt;返回值(RETURN VALUE)&lt;/li&gt;
+&lt;li&gt;错误(ERRORS)&lt;/li&gt;
+&lt;li&gt;环境(ENVIRONMENT),&lt;/li&gt;
+&lt;li&gt;文件(FILES)&lt;/li&gt;
+&lt;li&gt;版本(VERSIONS)&lt;/li&gt;
+&lt;li&gt;符合标准(CONFORMING TO)&lt;/li&gt;
+&lt;li&gt;注(NOTES)&lt;/li&gt;
+&lt;li&gt;缺陷(BUGS)&lt;/li&gt;
+&lt;li&gt;示例(EXAMPLE)&lt;/li&gt;
+&lt;li&gt;作者(AUTHORS)&lt;/li&gt;
+&lt;li&gt;亦见(SEE ALSO).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;命令格式&#34;&gt;命令格式&lt;/h4&gt;
+&lt;p&gt;一般命令的使用方法出现在&lt;code&gt;概述(SYNOPSIS&lt;/code&gt;,&lt;code&gt;选项(OPTIONS)&lt;/code&gt;和&lt;code&gt;示例(EXAMPLE)&lt;/code&gt;三个部分,格式如下:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;加粗文本       按原样显示。&lt;/li&gt;
+&lt;li&gt;倾斜文本       用相应的参数进行替换。&lt;/li&gt;
+&lt;li&gt;[-abc]         “&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; ” 内的任意/全部参数都是可选的。&lt;/li&gt;
+&lt;li&gt;-a|-b          以“|”分隔的选项可以一起使用。&lt;/li&gt;
+&lt;li&gt;参数 &amp;hellip;       参数 可以重复。&lt;/li&gt;
+&lt;li&gt;[表达式] &amp;hellip;   “&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt; ”内的整个 表达式 可以重复。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;man的一般使用方式&#34;&gt;man的一般使用方式&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;man ls
+显示 项目 (程序)  ls 对应的手册页
+
+man man.7
+Display the manual page for macro package man from section 7.  (This is an alternative
+spelling of &amp;quot;man 7 man&amp;quot;.)
+
+man &#39;man(7)&#39;
+Display the manual page for macro package  man  from  section  7.   (This  is  another alternative  spelling  of  &amp;quot;man  7  man&amp;quot;.   It may be more convenient when copying and pasting cross-references to manual pages.  Note that the parentheses must normally  be quoted to protect them from the shell.)
+
+man -a intro
+正确执行时显示手册中包含的所有可用的  intro 手册页。可以在连续显示过程中退出或跳过任一
+页。
+
+man -t bash | lpr -Pps
+Format the manual page for bash into the default troff or groff format and pipe it  to the printer named ps.  The default output for groff is usually PostScript.  man --help should advise as to which processor is bound to the -t option.
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;如果man没有你使用的命令的文档怎么办&#34;&gt;如果man没有你使用的命令的文档怎么办&lt;/h3&gt;
+&lt;p&gt;一般的程序都会支持如下几个命令：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;-h 显示帮助（不一定是这个功能）&lt;/li&gt;
+&lt;li&gt;&amp;ndash;help 显示帮助&lt;/li&gt;
+&lt;li&gt;&amp;ndash;version 显示版本&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;其他常用命令&#34;&gt;其他常用命令&lt;/h2&gt;
+&lt;p&gt;这个太多了，直接放链接吧&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.runoob.com/w3cnote/linux-common-command-2.html&#34;&gt;Linux 常用命令&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&amp;hellip; 各大发行版的wiki&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://wiki.debian.org/zh_CN/DebianWiki&#34;&gt;https://wiki.debian.org/zh_CN/DebianWiki&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://wiki.deepin.org/&#34;&gt;https://wiki.deepin.org/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;linux常用软件&#34;&gt;linux常用软件&lt;/h2&gt;
+&lt;p&gt;软件清单&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;办公软件-WPS
+
+浏览器-Firefox (chrome ×)
+
+开发工具-idea系列 vscode 
+
+pdf阅读器-Okular
+
+聊天工具-tim qq 等
+
+图像处理-gimp krita
+
+视频剪辑-kdenlive
+
+音乐软件-网易云音乐
+
+输入法-搜狗输入法(不推荐) 有能力可尝试fcitx 和 fcitx5的其他输入法
+
+下载工具-aria2
+
+虚拟机程序-virtualbox
+用来运行office
+
+游戏-steam
+steam官方支持linux，赶快安装吧_，基本游戏就不用愁了
+
+文本编辑器-nano gedit vim nvim vi 等等
+&lt;/code&gt;&lt;/pre&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>SGI_STL中std::list::sort的实现细节</title>
+      <link>https://wuliaotc.github.io/post/sgi_stl%E4%B8%ADstdlistsort%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82/</link>
+      <pubDate>Sun, 01 Sep 2019 21:57:49 +0800</pubDate>
+      
+      <guid>https://wuliaotc.github.io/post/sgi_stl%E4%B8%ADstdlistsort%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82/</guid>
+      
+        <description>&lt;h3 id=&#34;最近在看侯捷老师的stl源码剖析从中收获了很多书中并没有解释listsort的每步的目的和具体分析我决定写一篇文章记录一下有关序列式容器list的sort算法的实现细节&#34;&gt;最近在看侯捷老师的&amp;laquo;STL源码剖析&amp;raquo;，从中收获了很多。书中并没有解释list::sort的每步的目的，和具体分析，我决定写一篇文章记录一下有关序列式容器list的sort算法的实现细节。&lt;/h3&gt;
+&lt;h3 id=&#34;有一个要注意的地方书中认为sort是quick-sort-即快速排序算法实际上是错的应该是merge-归并排序算法&#34;&gt;有一个要注意的地方，书中认为sort是quick sort 即快速排序算法，实际上是错的，应该是merge 归并排序算法。&lt;/h3&gt;
+&lt;h3 id=&#34;下面摆一下源码并注释一下我的理解&#34;&gt;下面摆一下源码，并注释一下我的理解。&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;template&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;T&lt;/span&gt;,&lt;span style=&#34;color:#66d9ef&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;Alloc&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; list&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T, Alloc&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;::&lt;/span&gt;sort()
+{
+    &lt;span style=&#34;color:#75715e&#34;&gt;//以下是书中自带的注释
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;//
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;//以下判断，如果是空链表，或仅有一个元素,就不进行任何操作
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;//使用 size() == 0 || size() == 1 来判断,虽然也可以,但是比较慢
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;//
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;//以上是书中自带的注释
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;//SGI STL中 list 是使用双向环链表实现的，其中链表的尾部是一个空节点，即head-&amp;gt;pre是一个空节点，指向尾部。
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;(node&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;next &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; node &lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt; sink_type(node&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;next)&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;next &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; node)
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;;
+    &lt;span style=&#34;color:#75715e&#34;&gt;//以下是书中自带的注释
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;//
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;//一些新的lists，作为中介数据的存放区
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;//
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;//以上是书中自带的注释
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    list&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T, Alloc&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; carry;
+    list&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;T, Alloc&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; counter[&lt;span style=&#34;color:#ae81ff&#34;&gt;64&lt;/span&gt;];
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; fill &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+    &lt;span style=&#34;color:#75715e&#34;&gt;//在下列循环中,每次最后都将全部数据合并到counter[fill]，然后执行++fill
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;/*
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        外层循环每次循环从list头部取出一个节点放入carry中，
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;            内层循环每次循环将carry合并入counter[i]后放回carry，能够保证清空counter[i]，然后++i
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;        外层循环能够保证每次执行完carry都会被清空，内容放入counter[fill]
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;    */&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;empty())
+    {
+        &lt;span style=&#34;color:#75715e&#34;&gt;//将链表中的begin()插入到carry.begin()的位置
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        carry.splice(carry.begin(), &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;this&lt;/span&gt;, begin)&lt;span style=&#34;color:#75715e&#34;&gt;//常数级操作
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;&lt;span style=&#34;color:#75715e&#34;&gt;//常数级操作
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;//要求是i&amp;lt;fill 并且counter[i]不能为空，保证有数据可以取出
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt;(i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; fill &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;counter[i].empty())
+        {
+            counter[i].merge(carry);&lt;span style=&#34;color:#75715e&#34;&gt;//m+n次操作
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            carry.swap(counter[i&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;]);&lt;span style=&#34;color:#75715e&#34;&gt;//常量级
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        }
+        &lt;span style=&#34;color:#75715e&#34;&gt;//清空carry
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        carry.swap(counter[i]);&lt;span style=&#34;color:#75715e&#34;&gt;//常量级
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (i &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; fill) &lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;fill;&lt;span style=&#34;color:#75715e&#34;&gt;//常量级 i==fill 这个判断是为因 ！counter[i].empty(),即出现counter[i]为空的情况下准备的
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    }
+    &lt;span style=&#34;color:#75715e&#34;&gt;//因为在merge过程中，list会为空，因此
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; i&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; fill; i&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;)
+        counter[i].merge(counter[i&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;]);
+    swap(counter[fill&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;];)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;在上述算法中-counterfill可以储存-2fill-1-个节点也就是list的最大容量为-264-1&#34;&gt;在上述算法中 counter[fill]可以储存 2^fill-1 个节点，也就是list的最大容量为 2^64-1&lt;/h3&gt;
+</description>
+      
+    </item>
+    
+    <item>
+      <title>遍历二叉树</title>
+      <link>https://wuliaotc.github.io/post/%E9%81%8D%E5%8E%86%E4%BA%8C%E5%8F%89%E6%A0%91/</link>
+      <pubDate>Sat, 17 Aug 2019 16:13:34 +0800</pubDate>
+      
+      <guid>https://wuliaotc.github.io/post/%E9%81%8D%E5%8E%86%E4%BA%8C%E5%8F%89%E6%A0%91/</guid>
+      
+        <description>&lt;h3 id=&#34;今年暑假准备复习一下数据结构与算法&#34;&gt;今年暑假准备复习一下数据结构与算法&lt;/h3&gt;
+&lt;h2 id=&#34;今天看到二叉树这一节发现自己对二叉树的遍历的非递归方法还没有掌握因此写个博客记录一下&#34;&gt;今天看到二叉树这一节,发现自己对二叉树的遍历的非递归方法还没有掌握,因此写个博客记录一下&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;typedef&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; node
+{
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; value;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; node &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; left;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;struct&lt;/span&gt; node &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; right;
+} &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;Binarytree;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;首先先摆递归版本&#34;&gt;首先先摆递归版本&lt;/h2&gt;
+&lt;h3 id=&#34;前序遍历&#34;&gt;前序遍历&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;r_pre_traverse&lt;/span&gt;(Binarytree b)
+{
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (b&lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt;NULL)
+    {
+        printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;,b&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;value);
+        pre_traverse(b&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;left);
+        pre_traverse(b&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;right);
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;其他递归遍历方法只是换了个位置而已就不放在这里占位置了&#34;&gt;其他递归遍历方法只是换了个位置而已,就不放在这里占位置了&lt;/h3&gt;
+&lt;h2 id=&#34;非递归循环版本&#34;&gt;非递归循环版本&lt;/h2&gt;
+&lt;h3 id=&#34;中序遍历中序遍历比较简单先写这个&#34;&gt;中序遍历(中序遍历比较简单先写这个)&lt;/h3&gt;
+&lt;h4 id=&#34;首先我们来分析一下主要操作&#34;&gt;首先我们来分析一下主要操作&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;寻找左子树,将当前节点压入栈,直到左子树为空&lt;/li&gt;
+&lt;li&gt;从栈中弹出来一个节点,访问他的值(出栈即代表访问),然后切换到他的右子树,将右子树压入栈&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;循环结束的情况分析&#34;&gt;循环结束的情况分析&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;节点为空,栈为空
+&lt;ol&gt;
+&lt;li&gt;结束循环&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;节点不为空,栈为空
+&lt;ol&gt;
+&lt;li&gt;刚刚开始执行,函数还未进入循环体时&lt;/li&gt;
+&lt;li&gt;在循环过程中,栈为空即代表当前节点没有父节点,所以此时执行到根节点,正准备切换到根节点的右子树&lt;/li&gt;
+&lt;li&gt;也有可能在循环体的访问最后一个右节点时出现&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;节点为空,栈不为空
+&lt;ol&gt;
+&lt;li&gt;栈不为空代表有父节点,节点为空,说明该节点为&lt;code&gt;st.top()&lt;/code&gt;的右子树&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;节点不为空,栈不为空
+&lt;ul&gt;
+&lt;li&gt;这个没什么好说的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;总体的流程大概是&#34;&gt;总体的流程大概是&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;while(b!=nullptr||!st.empty()){//右子树为空且栈空时结束
+    while(b!=nullptr){//直到左子树为空
+        执行1;
+    }
+    if(!st.empty()){
+        执行2;
+    }
+    
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;丢代码&#34;&gt;丢代码&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;inoder_traverse&lt;/span&gt;(Binarytree b)
+{
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (b&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;)
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;;
+    stack&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;Binarytree &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; st;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (b&lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;||!&lt;/span&gt;st.empty())
+    {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (b&lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;)&lt;span style=&#34;color:#75715e&#34;&gt;//节点不为空
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        {
+            st.push(b);&lt;span style=&#34;color:#75715e&#34;&gt;//压入当前节点
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            b&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;b&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;left;&lt;span style=&#34;color:#75715e&#34;&gt;//切换到左子树
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        }
+        &lt;span style=&#34;color:#75715e&#34;&gt;//左子树为空,且栈不为空的情况下切换到父节点
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;st.empty()){
+            b&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;st.top();
+            st.pop(); 
+
+            &lt;span style=&#34;color:#75715e&#34;&gt;//访问节点
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            cout&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt;b&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;value&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt;endl;
+            &lt;span style=&#34;color:#75715e&#34;&gt;//如果有右子树,则切换到右子树,没有的话为空,再次循环时也会正常,所以不需要判断
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            b&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;b&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;right;
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;前序遍历-1&#34;&gt;前序遍历&lt;/h3&gt;
+&lt;h4 id=&#34;首先我们来分析一下主要操作-1&#34;&gt;首先我们来分析一下主要操作&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;边访问节点边输出当前节点的值,并把节点存入栈中,然后访问左子树,直到访问节点为空&lt;/li&gt;
+&lt;li&gt;如果栈不空,从栈中弹出节点,访问他的右子树&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;循环结束的情况分析-1&#34;&gt;循环结束的情况分析&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;感觉情况和中序遍历差不多的样子,就不列举了&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;总体的流程大概是-1&#34;&gt;总体的流程大概是&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;while(b!=nullptr||!st.empty()){
+    while(b!=nullptr){
+        执行1;
+    }
+    if(!st.empty()){
+        执行2;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;丢代码-1&#34;&gt;丢代码&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;pre_traverse&lt;/span&gt;(Binarytree b)
+{
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (b&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;;
+    stack&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;Binarytree &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; st;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (b&lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;||!&lt;/span&gt;st.empty())
+    {   
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (b&lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;)&lt;span style=&#34;color:#75715e&#34;&gt;//节点不为空
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        {
+            &lt;span style=&#34;color:#75715e&#34;&gt;//访问节点
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            cout&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt;b&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;value&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt;endl;
+            st.push(b);&lt;span style=&#34;color:#75715e&#34;&gt;//压入当前节点
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            b&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;b&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;left;&lt;span style=&#34;color:#75715e&#34;&gt;//切换到左子树
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        }
+        &lt;span style=&#34;color:#75715e&#34;&gt;//左子树为空,且栈不为空的情况下切换到父节点
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;st.empty()){
+            b&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;st.top();
+            st.pop();
+            &lt;span style=&#34;color:#75715e&#34;&gt;//如果有右子树,则切换到右子树,没有的话为空,再次循环时也会正常,所以不需要判断
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            b&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;b&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;right;
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;后序遍历这个好像有点复杂来着有两种思路一种是节点增加一个参数用以确认是否第一次访问具体方法呢和上面两种差不多第二种是使用双指针的方法这里着重讨论第二种&#34;&gt;后序遍历,这个好像有点复杂来着(有两种思路,一种是节点增加一个参数用以确认是否第一次访问,具体方法呢和上面两种差不多,第二种是使用双指针的方法,这里着重讨论第二种)&lt;/h3&gt;
+&lt;h4 id=&#34;具体思路&#34;&gt;&lt;em&gt;具体思路&lt;/em&gt;&lt;/h4&gt;
+&lt;h4 id=&#34;利用两个指针-cur和pre进行操作其中cur用来保存当前节点的指针pre前一次访问的节点pre和cur没有确定的父子关系要保证根结点在左孩子和右孩子访问之后才能访问因此对于任一结点p先将其入栈&#34;&gt;利用两个指针 cur和pre进行操作,其中cur用来保存当前节点的指针,pre前一次访问的节点(pre和cur没有确定的父子关系).要保证根结点在左孩子和右孩子访问之后才能访问，因此对于任一结点P，先将其入栈。&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;如果P不存在左孩子和右孩子，则可以直接访问它；&lt;/li&gt;
+&lt;li&gt;或者P存在左孩子或者右孩子，但是其左孩子和右孩子都已被访问过了，则同样可以直接访问该结点。&lt;/li&gt;
+&lt;li&gt;若非上述两种情况，则将P的右孩子和左孩子依次入栈，这样就保证了每次取栈顶元素的时候，左孩子在右孩子前面被访问，左孩子和右孩子都在根结点前面被访问。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;首先我们来分析一下主要操作-2&#34;&gt;首先我们来分析一下主要操作&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;访问节点 直接将节点压入栈中
+&lt;ul&gt;
+&lt;li&gt;如果节点不存在子树,直接访问&lt;/li&gt;
+&lt;li&gt;如果节点存在节点,待按照顺序访问子节点后再从栈中弹出父节点进行访问&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;循环结束的情况分析循环开始前将根节点压入&#34;&gt;循环结束的情况分析(循环开始前将根节点压入)&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;节点为空,栈为空
+&lt;ol&gt;
+&lt;li&gt;空树,直接过滤&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;节点不为空,栈为空
+&lt;ol&gt;
+&lt;li&gt;根节点输出完毕,结束循环&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;节点为空,栈不为空
+&lt;ol&gt;
+&lt;li&gt;右端子树访问完毕,&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;节点不为空,栈不为空
+&lt;ul&gt;
+&lt;li&gt;这个没什么好说的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;总体的流程大概是-2&#34;&gt;总体的流程大概是&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt;(&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;st.empty()){
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;((cur&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;left&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;cur&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;right&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt;
+        ((pre&lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;(pre&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;cur&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;left&lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt;pre&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;cur&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;right))){&lt;span style=&#34;color:#75715e&#34;&gt;//节点不存在子树,或者子树已经都被访问过了
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;执行&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;{
+        &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;执行&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;丢代码-2&#34;&gt;丢代码&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;postorder_traversal&lt;/span&gt;(Binarytree b)
+{
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (b&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;)
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt;;
+    Binarytree cur;&lt;span style=&#34;color:#75715e&#34;&gt;//是指针哦 保存当前访问的节点
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    Binarytree pre&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;;
+    stack&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;Binarytree &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; st;
+    st.push(b);&lt;span style=&#34;color:#75715e&#34;&gt;//先把根节点压入堆栈
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (&lt;span style=&#34;color:#f92672&#34;&gt;!&lt;/span&gt;st.empty())&lt;span style=&#34;color:#75715e&#34;&gt;//堆栈不空,堆栈空的时候表示根节点已经被访问了
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    {
+        cur&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;st.top();&lt;span style=&#34;color:#75715e&#34;&gt;//当前访问的节点为栈顶节点 不弹出
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#75715e&#34;&gt;//节点没有子树
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; ((cur&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;left&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;cur&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;right&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt;
+        (pre&lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;(pre&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;cur&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;left&lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt;pre&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;cur&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;right)))&lt;span style=&#34;color:#75715e&#34;&gt;//或者节点的子树都被访问过了,即上一个访问的节点是当前节点的子节点
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        {
+            &lt;span style=&#34;color:#75715e&#34;&gt;//访问当前节点
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            cout&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt;cur&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;value&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt;endl;
+            st.pop();&lt;span style=&#34;color:#75715e&#34;&gt;//弹出堆栈 弹出就代表访问了该节点
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+            pre&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;cur;&lt;span style=&#34;color:#75715e&#34;&gt;//为下一次访问做准备
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        }
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;//存在还未访问的子树，进行子树的访问
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        {
+
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (cur&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;left&lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;)
+                st.push(cur&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;left);
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (cur&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;right&lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;nullptr&lt;/span&gt;)
+                st.push(cur&lt;span style=&#34;color:#f92672&#34;&gt;-&amp;gt;&lt;/span&gt;right);
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;em&gt;这个算法的实现我参考了这个大佬的博客:&lt;/em&gt;&lt;a href=&#34;https://www.cnblogs.com/dolphin0520/archive/2011/08/25/2153720.html&#34;&gt;二叉树的非递归遍历&lt;/a&gt;&lt;/p&gt;</description>
+      
+    </item>
+    
+    <item>
+      <title>Leetcode09</title>
+      <link>https://wuliaotc.github.io/post/leetcode09/</link>
+      <pubDate>Wed, 14 Aug 2019 14:06:01 +0800</pubDate>
+      
+      <guid>https://wuliaotc.github.io/post/leetcode09/</guid>
+      
+        <description>&lt;h2 id=&#34;9回文数&#34;&gt;9.回文数&lt;/h2&gt;
+&lt;h3 id=&#34;判断一个整数是否是回文数回文数是指正序从左向右和倒序从右向左读都是一样的整数&#34;&gt;判断一个整数是否是回文数。回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;示例 1:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;输入: 121&lt;/li&gt;
+&lt;li&gt;输出: true&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;示例 2:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;输入: -121&lt;/li&gt;
+&lt;li&gt;输出: false&lt;/li&gt;
+&lt;li&gt;解释: 从左向右读, 为 -121 。 从右向左读, 为 121- 。因此它不是一个回文数。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;示例 3:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;输入: 10&lt;/li&gt;
+&lt;li&gt;输出: false&lt;/li&gt;
+&lt;li&gt;解释: 从右向左读, 为 01 。因此它不是一个回文数。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;进阶&#34;&gt;进阶:&lt;/h3&gt;
+&lt;h4 id=&#34;你能不将整数转为字符串来解决这个问题吗&#34;&gt;你能不将整数转为字符串来解决这个问题吗？&lt;/h4&gt;
+&lt;h3 id=&#34;昨天看题目的时候不小心看了一下官方的解释所以相当于部分借鉴了官方解法但是好像还没是没有官方写的好&#34;&gt;昨天看题目的时候不小心看了一下官方的解释,所以相当于部分借鉴了官方解法&amp;hellip;,但是好像还没是没有官方写的好.&lt;/h3&gt;
+&lt;h3 id=&#34;下面是我自己的解法-顺便放上能完整运行的c程序&#34;&gt;下面是我自己的解法 顺便放上能完整运行的c程序&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;stdbool.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;bool&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;isPalindrome&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; x);
+&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;()
+{
+    printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d&amp;#34;&lt;/span&gt;, isPalindrome(&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;));
+    printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d&amp;#34;&lt;/span&gt;, isPalindrome(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;));
+    printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d&amp;#34;&lt;/span&gt;, isPalindrome(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;));
+    printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d&amp;#34;&lt;/span&gt;, isPalindrome(&lt;span style=&#34;color:#ae81ff&#34;&gt;121&lt;/span&gt;));
+    printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d&amp;#34;&lt;/span&gt;, isPalindrome(&lt;span style=&#34;color:#ae81ff&#34;&gt;123321&lt;/span&gt;));
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;bool&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;isPalindrome&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; x) {
+    &lt;span style=&#34;color:#75715e&#34;&gt;/*(这里借鉴了官方,主要就是为了过滤参数,过滤的情况有 1.负数情况,这很显然不是回文数, 2. 末尾为0的情况(注意0必须排除,官方没有提醒我0也是回文数....其实是我自己傻)*/&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;(x&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt;(x&lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt;x&lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;))
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; false;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; left&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;x;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; right&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;&lt;span style=&#34;color:#75715e&#34;&gt;/*这两个参数的含义是x的左半部分和右半部分*/&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt;(left&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt;right){
+        right&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;right&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;left&lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;(left&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;right){
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; true;
+        }
+        left&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;left&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;;
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;(left&lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt;right){
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; true;
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; false;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;我来解释一下上面那个while循环里的内容&#34;&gt;我来解释一下上面那个while循环里的内容&lt;/h4&gt;
+&lt;h4 id=&#34;首先跳出条件是leftright即左边大于右边&#34;&gt;首先,跳出条件是left&amp;lt;=right,即左边大于右边&lt;/h4&gt;
+&lt;h4 id=&#34;比如-12361-当读取到中间的时候-left12-right163-即左边比右边低一位x为奇数-或者-相同位数的时候跳出x为偶数&#34;&gt;比如 12361 当读取到中间的时候 left=12 right=163 即左边比右边低一位(x为奇数) 或者 相同位数的时候跳出(x为偶数)&lt;/h4&gt;
+&lt;h4 id=&#34;rightright10left10这个没什么好解释的就是右边又多了一位&#34;&gt;right=right*10+left%10这个没什么好解释的,就是右边又多了一位&lt;/h4&gt;
+&lt;h4 id=&#34;接下来必须判断一次-leftright-因为当x为单数时-比如x121left12-right12-是应该返回true的没有办法很好的解决这个问题所以需要增加一次判断&#34;&gt;接下来必须判断一次 left==right 因为当x为单数时 比如x=121,left=12 right=12 是应该返回true的,没有办法很好的解决这个问题,所以需要增加一次判断&lt;/h4&gt;
+&lt;h3 id=&#34;接下来摆官解&#34;&gt;接下来摆官解&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;bool&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;isPalindrome&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; x) {
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt;(x &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt; (x &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; x &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)) {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; false;
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; revertedNumber &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt;(x &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; revertedNumber) {
+        revertedNumber &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; revertedNumber &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; x &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;;
+        x &lt;span style=&#34;color:#f92672&#34;&gt;/=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;;
+    }
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; x &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; revertedNumber &lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt; x &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; revertedNumber&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;;
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;首先-第一个判断没什么好解释的和我的一样我和他一样才对&#34;&gt;首先 第一个判断没什么好解释的,和我的一样(我和他一样才对)&lt;/h4&gt;
+&lt;h4 id=&#34;哇官解的写好和我好像他好像能够避免-while循环内的判断&#34;&gt;哇,官解的写好和我好像,他好像能够避免 while循环内的判断&lt;/h4&gt;
+&lt;h4 id=&#34;让我看看他是怎么做到的&#34;&gt;让我看看他是怎么做到的&lt;/h4&gt;
+&lt;h4 id=&#34;他在返回时增加了一个x--revertednumber10-很好的解决了这个问题我没想到&#34;&gt;他在返回时增加了一个x == revertedNumber/10 很好的解决了这个问题&amp;hellip;我没想到&lt;/h4&gt;
+&lt;h4 id=&#34;举个例子-x121退出循环时-leftx1-rightrevertednumber12-就解决了这个问题&#34;&gt;举个例子 x=121,退出循环时 left(x)=1 right(revertedNumber)=12 就解决了这个问题&lt;/h4&gt;
+&lt;h3 id=&#34;今天的我还是好菜啊&#34;&gt;今天的我还是好菜啊!!&lt;/h3&gt;
+</description>
+      
+    </item>
+    
+    <item>
+      <title>Leetcode07</title>
+      <link>https://wuliaotc.github.io/post/leetcode07/</link>
+      <pubDate>Fri, 09 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://wuliaotc.github.io/post/leetcode07/</guid>
+      
+        <description>&lt;h2 id=&#34;7整数反转&#34;&gt;7.整数反转&lt;/h2&gt;
+&lt;h4 id=&#34;给出一个-32-位的有符号整数你需要将这个整数中每位上的数字进行反转&#34;&gt;给出一个 32 位的有符号整数，你需要将这个整数中每位上的数字进行反转。&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;示例 1:
+&lt;ul&gt;
+&lt;li&gt;输入: 123&lt;/li&gt;
+&lt;li&gt;输出: 321&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;示例 2:
+&lt;ul&gt;
+&lt;li&gt;输入: -123&lt;/li&gt;
+&lt;li&gt;输出: -321&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;示例 3:
+&lt;ul&gt;
+&lt;li&gt;输入: 120&lt;/li&gt;
+&lt;li&gt;输出: 21&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;注意&#34;&gt;注意:&lt;/h3&gt;
+&lt;h4 id=&#34;假设我们的环境只能存储得下-32-位的有符号整数则其数值范围为-231--231--1请根据这个假设如果反转后整数溢出那么就返回-0&#34;&gt;假设我们的环境只能存储得下 32 位的有符号整数，则其数值范围为 [−231,  231 − 1]。请根据这个假设，如果反转后整数溢出那么就返回 0。&lt;/h4&gt;
+&lt;h4 id=&#34;这是我第一次没有看评论写出来的当然没有通过测试&#34;&gt;这是我第一次没有看评论写出来的,当然,没有通过测试&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;reverse&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; x);
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;(){
+        printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d&amp;#34;&lt;/span&gt;, reverse(&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;2147483648&lt;/span&gt;));
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+    }
+    &lt;span style=&#34;color:#75715e&#34;&gt;//-2147483648~2147483647 10位
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;reverse&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; x){
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; b[&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; {&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;6&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;}; &lt;span style=&#34;color:#75715e&#34;&gt;//这是大于0情况的
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; a[&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; {&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;};&lt;span style=&#34;color:#75715e&#34;&gt;//初始化,不然当x=0是会出现bug
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; ifPositive &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;;&lt;span style=&#34;color:#75715e&#34;&gt;//这个参数是为了记录该数为正或为负
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; result &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+        printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, x);
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (x &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;){
+            x&lt;span style=&#34;color:#f92672&#34;&gt;=-&lt;/span&gt;x;
+            ifPositive &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+        }
+        printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;%d&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;,x);
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+    
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (x){ &lt;span style=&#34;color:#75715e&#34;&gt;//x不为0
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            a[i] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; x &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;;
+            x &lt;span style=&#34;color:#f92672&#34;&gt;/=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;;
+            i&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;;
+        } &lt;span style=&#34;color:#75715e&#34;&gt;//出来后i的最大值为10
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (i &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;){ &lt;span style=&#34;color:#75715e&#34;&gt;//不要判断溢出
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;判断溢出&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;);
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; j&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;j&lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;;j&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;)
+                printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;a[%d]:%d&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;,j,a[j]);
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; j &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; (; j &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;; j&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;){ &lt;span style=&#34;color:#75715e&#34;&gt;//比较除个位以外的数
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (a[j] &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; b[j]){ &lt;span style=&#34;color:#75715e&#34;&gt;//相同,继续循环判断
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                    printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;continue:%d&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;,j);
+                    &lt;span style=&#34;color:#66d9ef&#34;&gt;continue&lt;/span&gt;;
+                }
+                &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (a[j] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; b[j]){ &lt;span style=&#34;color:#75715e&#34;&gt;//异常 返回
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                    printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;return:%d&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, j);
+                     &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+                }
+                &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;{ &lt;span style=&#34;color:#75715e&#34;&gt;//出现一次即代表 可以跳出循环
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                    printf(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;break:%d&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;, j);
+                     &lt;span style=&#34;color:#66d9ef&#34;&gt;break&lt;/span&gt;;
+                }
+            }
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (j &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;){ &lt;span style=&#34;color:#75715e&#34;&gt;//继续判断
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;                &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (a[&lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; b[&lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; ifPositive){
+                    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+                }
+            }
+        }
+    
+        result &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; a[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;];
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; j &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;; j &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; i; j&lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;)
+        {
+            result &lt;span style=&#34;color:#f92672&#34;&gt;*=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;;
+            result &lt;span style=&#34;color:#f92672&#34;&gt;+=&lt;/span&gt; a[j];
+        }
+    
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; ifPositive &lt;span style=&#34;color:#f92672&#34;&gt;?&lt;/span&gt; result : &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;result;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;在调试过程中我发现测试内容有一个为x-2147483648终于知道了为什么无法通过测试当为32位int时-2147483648转为正数也会因为溢出变为2147483647正向最大1-2147483648但是我也不知道这应该怎么解决有大佬啊知道的话请带带我&#34;&gt;在调试过程中我发现测试内容有一个为x=-2147483648,终于知道了为什么无法通过测试,当为32位int时,-2147483648转为正数也会因为溢出变为2147483647(正向最大)+1=-2147483648,但是我也不知道这应该怎么解决,有大佬啊知道的话请带带我&lt;/h4&gt;
+&lt;h4 id=&#34;看了官方的解法我感觉我还是太菜了&#34;&gt;看了官方的解法我感觉我还是太菜了&lt;/h4&gt;
+&lt;h5 id=&#34;手动转下c语言&#34;&gt;手动转下c语言&lt;/h5&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;reverse&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; x) {
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; rev &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (x &lt;span style=&#34;color:#f92672&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;) {
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; pop &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; x &lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;;&lt;span style=&#34;color:#75715e&#34;&gt;//没啥好说的
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            x &lt;span style=&#34;color:#f92672&#34;&gt;/=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;;&lt;span style=&#34;color:#75715e&#34;&gt;//没啥好说的
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (rev &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; INT_MAX&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt; (rev &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; INT_MAX &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; pop &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (rev &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; INT_MIN&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt; (rev &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; INT_MIN &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; pop &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;8&lt;/span&gt;)) &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;;&lt;span style=&#34;color:#75715e&#34;&gt;//这里这个pop判断很有灵性.
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;            rev &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rev &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; pop;
+        }
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; rev;
+    }
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;复习一下c语言负数取余的知识&#34;&gt;复习一下c语言负数取余的知识&lt;/h4&gt;
+&lt;h5 id=&#34;嗯-比如-73-1-就是--733-1&#34;&gt;嗯 比如-7%3=-1 就是 &lt;em&gt;-7+3+3=-1&lt;/em&gt;&lt;/h5&gt;
+&lt;h4 id=&#34;然后写一句提醒自己这不是汇编把数字拆分成数组并不会提升速度我也不太清楚反正这样写很麻烦大概性能提升也不明显可我就是个强迫症反正下次不这样写了&#34;&gt;然后写一句提醒自己,这不是汇编,把数字拆分成数组并不会提升速度(我也不太清楚,反正这样写很麻烦,大概性能提升也不明显),可我就是个强迫症&amp;hellip;&amp;hellip;,反正下次不这样写了&lt;/h4&gt;
+&lt;h4 id=&#34;嘛-感觉官方这个算法很神秘我可能一时半会想不出来时间复杂度是ologx-空间复杂度是o1&#34;&gt;嘛 感觉官方这个算法很神秘,我可能一时半会想不出来,时间复杂度是O(log(x)) 空间复杂度是O(1)&lt;/h4&gt;
+&lt;h3 id=&#34;先自己写一遍看看-第二轮做的时候先复习8&#34;&gt;先自己写一遍看看 第二轮做的时候先复习8&lt;/h3&gt;
+</description>
       
     </item>
     

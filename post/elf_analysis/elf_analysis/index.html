@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>ELF_analysis - wuliaotc 的博客</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="wuliaotc" />
+  <meta name="description" content="" />
+<meta name="keywords" content="c, c&#43;&#43;, gcc, elf" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.71.0" />
+
+
+<link rel="canonical" href="https://wuliaotc.github.io/post/elf_analysis/elf_analysis/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa3d941d1d0e0ddc985804227feabffea55c89883eb0af34e0532a7ae9135151.css" integrity="sha256-&#43;j2UHR0ODdyYWAQif&#43;q//qVciYg&#43;sK804FMqeukTUVE=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="ELF_analysis" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wuliaotc.github.io/post/elf_analysis/elf_analysis/" />
+<meta property="article:published_time" content="2020-05-21T00:06:24+08:00" />
+<meta property="article:modified_time" content="2020-05-21T00:06:24+08:00" />
+<meta itemprop="name" content="ELF_analysis">
+<meta itemprop="description" content="">
+<meta itemprop="datePublished" content="2020-05-21T00:06:24&#43;08:00" />
+<meta itemprop="dateModified" content="2020-05-21T00:06:24&#43;08:00" />
+<meta itemprop="wordCount" content="1956">
+
+
+
+<meta itemprop="keywords" content="c,c&#43;&#43;,gcc,elf," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="ELF_analysis"/>
+<meta name="twitter:description" content=""/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">wuliaotc</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/">首页</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/post/">文章</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/tags/">标签</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/about/">About</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://gohugo.io" rel="noopener" target="_blank">
+              hugo
+              
+              <i class="iconfont">
+                <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M623.36 272.96 473.216 423.04C467.2 429.056 467.072 438.656 472.896 444.416c0 0-6.72-6.656 1.6 1.6C496.064 467.648 528.64 500.224 528.64 500.224 534.464 506.048 544 505.856 550.016 499.904l150.08-150.144 67.328 66.432c9.024 8.96 27.456 4.544 30.4-8.96 19.968-92.608 46.656-227.52 46.656-227.52 6.848-34.496-16.192-56.704-49.92-49.92 0 0-134.656 26.816-227.328 46.784C560.32 178.048 556.352 182.272 554.752 187.136c-3.2 6.208-3.008 14.208 3.776 20.992L623.36 272.96z"></path>
+  <path d="M841.152 457.152c-30.528 0-54.784 24.512-54.784 54.656l0 274.752L237.696 786.56 237.696 237.696l206.016 0c6.656 0 10.752 0 13.248 0C487.68 237.696 512 213.184 512 182.848 512 152.32 487.36 128 456.96 128L183.04 128C153.216 128 128 152.576 128 182.848c0 3.136 0.256 6.272 0.768 9.28C128.256 195.136 128 198.272 128 201.408l0 639.488c0 0.064 0 0.192 0 0.256 0 0.128 0 0.192 0 0.32 0 30.528 24.512 54.784 54.784 54.784l646.976 0c6.592 0 9.728 0 11.712 0 28.736 0 52.928-22.976 54.464-51.968C896 843.264 896 842.304 896 841.344l0-20.352L896 561.408 896 512.128C896 481.792 871.424 457.152 841.152 457.152z"></path>
+</svg>
+
+              </i>
+            </a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      wuliaotc
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/">首页</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/post/">文章</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/tags/">标签</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://gohugo.io" rel="noopener" target="_blank">
+              hugo
+              
+              <i class="iconfont">
+                <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M623.36 272.96 473.216 423.04C467.2 429.056 467.072 438.656 472.896 444.416c0 0-6.72-6.656 1.6 1.6C496.064 467.648 528.64 500.224 528.64 500.224 534.464 506.048 544 505.856 550.016 499.904l150.08-150.144 67.328 66.432c9.024 8.96 27.456 4.544 30.4-8.96 19.968-92.608 46.656-227.52 46.656-227.52 6.848-34.496-16.192-56.704-49.92-49.92 0 0-134.656 26.816-227.328 46.784C560.32 178.048 556.352 182.272 554.752 187.136c-3.2 6.208-3.008 14.208 3.776 20.992L623.36 272.96z"></path>
+  <path d="M841.152 457.152c-30.528 0-54.784 24.512-54.784 54.656l0 274.752L237.696 786.56 237.696 237.696l206.016 0c6.656 0 10.752 0 13.248 0C487.68 237.696 512 213.184 512 182.848 512 152.32 487.36 128 456.96 128L183.04 128C153.216 128 128 152.576 128 182.848c0 3.136 0.256 6.272 0.768 9.28C128.256 195.136 128 198.272 128 201.408l0 639.488c0 0.064 0 0.192 0 0.256 0 0.128 0 0.192 0 0.32 0 30.528 24.512 54.784 54.784 54.784l646.976 0c6.592 0 9.728 0 11.712 0 28.736 0 52.928-22.976 54.464-51.968C896 843.264 896 842.304 896 841.344l0-20.352L896 561.408 896 512.128C896 481.792 871.424 457.152 841.152 457.152z"></path>
+</svg>
+
+              </i>
+            </a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">ELF_analysis</h1>
+      
+      <div class="post-meta">
+        <time datetime="2020-05-21" class="post-time">
+          2020-05-21
+        </time>
+        
+        
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    <div class="post-content">
+      <h2 id="elf文件分析">ELF文件分析</h2>
+<p>首先我们写一个样例程序</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">printf</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>format, ...);
+
+<span style="color:#66d9ef">int</span> global_init_var <span style="color:#f92672">=</span> <span style="color:#ae81ff">84</span>;<span style="color:#75715e">//全局
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> global_unint_var;
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">func1</span>(<span style="color:#66d9ef">int</span> i) { printf(<span style="color:#e6db74">&#34;%d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, i); }
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>) {
+	<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> static_var <span style="color:#f92672">=</span> <span style="color:#ae81ff">85</span>;<span style="color:#75715e">//静态
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> static_var2;
+
+	<span style="color:#66d9ef">int</span> a <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;<span style="color:#75715e">//局部
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span> b;
+
+	<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> c <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;<span style="color:#75715e">//常量
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> d <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+	(<span style="color:#66d9ef">void</span>)d;
+
+	func1(static_var <span style="color:#f92672">+</span> static_var2 <span style="color:#f92672">+</span> a <span style="color:#f92672">+</span> b);
+
+	<span style="color:#66d9ef">return</span> a;
+}
+
+</code></pre></div><p>然后使用</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">gcc -c simpleSection.c
+objdump -h simpleSection.o 
+</code></pre></div><p><img src="/post/ELF_analysis/objdump.png" alt="avatar">
+<img src="/post/ELF_analysis/struct.drawio.svg" alt="avatar"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">使用objdump挖掘代码段内容 -d代表反汇编
+
+objdump -s -d simpleSection.o 
+
+simpleSection.o：     文件格式 elf64-x86-64
+
+.text 區段的內容： 指令内容
+ <span style="color:#ae81ff">0000</span> 554889e5 4883ec10 897dfc8b 45fc89c6  UH..H....<span style="color:#f92672">}</span>..E...
+ <span style="color:#ae81ff">0010</span> 488d3d00 000000b8 <span style="color:#ae81ff">00000000</span> e8000000  H.<span style="color:#f92672">=</span>.............
+ <span style="color:#ae81ff">0020</span> 0090c9c3 554889e5 4883ec10 c745f801  ....UH..H....E..
+ <span style="color:#ae81ff">0030</span> 0000008b <span style="color:#ae81ff">15000000</span> 008b0500 <span style="color:#ae81ff">00000001</span>  ................
+ <span style="color:#ae81ff">0040</span> c28b45f8 01c28b45 fc01d089 c7e80000  ..E....E........
+ <span style="color:#ae81ff">0050</span> 00008b45 f8c9c3                      ...E...         
+.data 區段的內容：存放非0初始化的全局变量和静态变量
+ 分别对应global_init_var和static_var
+ <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">54000000</span> <span style="color:#ae81ff">55000000</span>                    T...U...        
+.rodata 區段的內容：对应 <span style="color:#e6db74">&#34;%d\n&#34;</span> 和两个static int 证明这里int为32位
+ <span style="color:#ae81ff">0000</span> 25640a00 <span style="color:#ae81ff">01000000</span> <span style="color:#ae81ff">01000000</span>           %d..........    
+.comment 區段的內容：
+ <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">00474343</span> 3a202847 4e552920 31302e31  .GCC: <span style="color:#f92672">(</span>GNU<span style="color:#f92672">)</span> 10.1
+ <span style="color:#ae81ff">0010</span> 2e3000                               .0.             
+.eh_frame 區段的內容：
+ <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">14000000</span> <span style="color:#ae81ff">00000000</span> 017a5200 <span style="color:#ae81ff">01781001</span>  .........zR..x..
+ <span style="color:#ae81ff">0010</span> 1b0c0708 <span style="color:#ae81ff">90010000</span> 1c000000 1c000000  ................
+ <span style="color:#ae81ff">0020</span> <span style="color:#ae81ff">00000000</span> <span style="color:#ae81ff">24000000</span> 00410e10 8602430d  ....$....A....C.
+ <span style="color:#ae81ff">0030</span> 065f0c07 <span style="color:#ae81ff">08000000</span> 1c000000 3c000000  ._..........&lt;...
+ <span style="color:#ae81ff">0040</span> <span style="color:#ae81ff">00000000</span> <span style="color:#ae81ff">33000000</span> 00410e10 8602430d  ....3....A....C.
+ <span style="color:#ae81ff">0050</span> 066e0c07 <span style="color:#ae81ff">08000000</span>                    .n......        
+
+.text 區段的反組譯：
+
+<span style="color:#ae81ff">0000000000000000</span> &lt;_Z5func1i&gt;:
+   0:   <span style="color:#ae81ff">55</span>                      push   %rbp
+   1:   <span style="color:#ae81ff">48</span> <span style="color:#ae81ff">89</span> e5                mov    %rsp,%rbp
+   4:   <span style="color:#ae81ff">48</span> <span style="color:#ae81ff">83</span> ec <span style="color:#ae81ff">10</span>             sub    $0x10,%rsp
+   8:   <span style="color:#ae81ff">89</span> 7d fc                mov    %edi,-0x4<span style="color:#f92672">(</span>%rbp<span style="color:#f92672">)</span>
+   b:   8b <span style="color:#ae81ff">45</span> fc                mov    -0x4<span style="color:#f92672">(</span>%rbp<span style="color:#f92672">)</span>,%eax
+   e:   <span style="color:#ae81ff">89</span> c6                   mov    %eax,%esi
+  10:   <span style="color:#ae81ff">48</span> 8d 3d <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>    lea    0x0<span style="color:#f92672">(</span>%rip<span style="color:#f92672">)</span>,%rdi        <span style="color:#75715e"># 17 &lt;_Z5func1i+0x17&gt;</span>
+  17:   b8 <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>          mov    $0x0,%eax
+  1c:   e8 <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>          callq  <span style="color:#ae81ff">21</span> &lt;_Z5func1i+0x21&gt;
+  21:   <span style="color:#ae81ff">90</span>                      nop
+  22:   c9                      leaveq 
+  23:   c3                      retq   
+
+<span style="color:#ae81ff">0000000000000024</span> &lt;main&gt;:
+  24:   <span style="color:#ae81ff">55</span>                      push   %rbp
+  25:   <span style="color:#ae81ff">48</span> <span style="color:#ae81ff">89</span> e5                mov    %rsp,%rbp
+  28:   <span style="color:#ae81ff">48</span> <span style="color:#ae81ff">83</span> ec <span style="color:#ae81ff">10</span>             sub    $0x10,%rsp
+  2c:   c7 <span style="color:#ae81ff">45</span> f8 <span style="color:#ae81ff">01</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>    movl   $0x1,-0x8<span style="color:#f92672">(</span>%rbp<span style="color:#f92672">)</span>
+  33:   8b <span style="color:#ae81ff">15</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>       mov    0x0<span style="color:#f92672">(</span>%rip<span style="color:#f92672">)</span>,%edx        <span style="color:#75715e"># 39 &lt;main+0x15&gt;</span>
+  39:   8b <span style="color:#ae81ff">05</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>       mov    0x0<span style="color:#f92672">(</span>%rip<span style="color:#f92672">)</span>,%eax        <span style="color:#75715e"># 3f &lt;main+0x1b&gt;</span>
+  3f:   <span style="color:#ae81ff">01</span> c2                   add    %eax,%edx
+  41:   8b <span style="color:#ae81ff">45</span> f8                mov    -0x8<span style="color:#f92672">(</span>%rbp<span style="color:#f92672">)</span>,%eax
+  44:   <span style="color:#ae81ff">01</span> c2                   add    %eax,%edx
+  46:   8b <span style="color:#ae81ff">45</span> fc                mov    -0x4<span style="color:#f92672">(</span>%rbp<span style="color:#f92672">)</span>,%eax
+  49:   <span style="color:#ae81ff">01</span> d0                   add    %edx,%eax
+  4b:   <span style="color:#ae81ff">89</span> c7                   mov    %eax,%edi
+  4d:   e8 <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>          callq  <span style="color:#ae81ff">52</span> &lt;main+0x2e&gt;
+  52:   8b <span style="color:#ae81ff">45</span> f8                mov    -0x8<span style="color:#f92672">(</span>%rbp<span style="color:#f92672">)</span>,%eax
+  55:   c9                      leaveq 
+  56:   c3                      retq   
+
+</code></pre></div><p>使用readelf 查看文件</p>
+<pre><code>readelf  -h simpleSection.o 
+</code></pre><p><img src="/post/ELF_analysis/readelf.png" alt="avatar"></p>
+<h3 id="符号表">符号表</h3>
+<p>符号是链接的接口,如果目标文件B要使用目标文件A中的函数&quot;foo,我们称目标文件A定义了foo,称目标文件B引用了&quot;foo&rdquo;。</p>
+<h4 id="符号的种类">符号的种类</h4>
+<ul>
+<li>定义在本目标文件的全局符号,可以被其他文件引用 如 main</li>
+<li>本目标引用而未定义的全局符号,称为外部符号 如 printf</li>
+<li>段名,值为段的起始地址,如.text</li>
+<li>局部符号,仅在编译单元内可见,用与分析coredump文件,对于链接过程无用</li>
+<li>行号信息,即目标文件指令与源代码中代码行的对应关系</li>
+</ul>
+<h4 id="使用nm查看符号表">使用nm查看符号表</h4>
+<pre><code>nm simpleSection.o 
+0000000000000000 D global_init_var
+                 U _GLOBAL_OFFSET_TABLE_
+0000000000000000 B global_unint_var
+0000000000000024 T main
+0000000000000000 T _Z5func1i
+                 U _Z6printfPKcz
+0000000000000004 d _ZZ4mainE10static_var
+0000000000000004 b _ZZ4mainE11static_var2
+0000000000000004 r _ZZ4mainE1c
+0000000000000008 r _ZZ4mainE1d
+</code></pre><h4 id="使用readelf查看符号表">使用readelf查看符号表</h4>
+<pre><code>readelf -s simpleSection.o                                                             
+
+Symbol table '.symtab' contains 19 entries:
+  編號:    值             大小 類型    約束   版本     索引名稱
+     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS simpleSection.c
+     2: 0000000000000000     0 SECTION LOCAL  DEFAULT    1 
+     3: 0000000000000000     0 SECTION LOCAL  DEFAULT    3 
+     4: 0000000000000000     0 SECTION LOCAL  DEFAULT    4 
+     5: 0000000000000000     0 SECTION LOCAL  DEFAULT    5 
+     6: 0000000000000004     4 OBJECT  LOCAL  DEFAULT    3 _ZZ4mainE10static_var
+     7: 0000000000000004     4 OBJECT  LOCAL  DEFAULT    4 _ZZ4mainE11static_var2
+     8: 0000000000000004     4 OBJECT  LOCAL  DEFAULT    5 _ZZ4mainE1c
+     9: 0000000000000008     4 OBJECT  LOCAL  DEFAULT    5 _ZZ4mainE1d
+    10: 0000000000000000     0 SECTION LOCAL  DEFAULT    7 
+    11: 0000000000000000     0 SECTION LOCAL  DEFAULT    8 
+    12: 0000000000000000     0 SECTION LOCAL  DEFAULT    6 
+    13: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    3 global_init_var
+    14: 0000000000000000     4 OBJECT  GLOBAL DEFAULT    4 global_unint_var
+    15: 0000000000000000    36 FUNC    GLOBAL DEFAULT    1 _Z5func1i
+    16: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND _GLOBAL_OFFSET_TABLE_ 未定义,说明这是外部符号
+    17: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND _Z6printfPKcz          未定义,说明这是外部符号
+    18: 0000000000000024    51 FUNC    GLOBAL DEFAULT    1 main
+</code></pre><h2 id="extern-c的作用">extern &ldquo;c&quot;的作用</h2>
+<p>我们可以看到,我们视同c++ 编译后,变量和函数前都会有一些莫名其妙的东西比如 _ZZ4mainE11static_var2
+一般来说,_Z开头说明使用了c++的规范
+我们可以做一个小实验</p>
+<pre><code>#include&lt;stdio.h&gt;
+ 
+namespace names{
+|   int var=3;
+}
+
+extern &quot;C&quot; int _name;
+
+int main(){
+    printf(&quot;%d\n&quot;,_name);
+    return 0;
+}
+
+</code></pre><p>编译后使用readelf查看他的符号表,其中有这样一条
+4 OBJECT  GLOBAL DEFAULT    3 _ZN5names3varE
+0 NOTYPE  GLOBAL DEFAULT    UND _name
+可以看到,我们有一个 UND即未定义的_name
+还有一个_ZN5names3varE,很明显这个是c++的命名规范
+我们将代码修改一下,将_name,修改为_ZN5names3varE
+然后执行,发现输出的正是var的值,这说明extern &ldquo;C&quot;的作用只是改变变量的命名规范</p>
+<h3 id="注意c语言不支持extern-c">注意c语言不支持extern &ldquo;c&rdquo;</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#960050;background-color:#1e0010">我们一般这样使用</span>
+<span style="color:#75715e">#ifdef __cplusplus
+</span><span style="color:#75715e"></span>extenrn <span style="color:#e6db74">&#34;C&#34;</span>{
+<span style="color:#75715e">#endif
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">foo</span>();
+<span style="color:#75715e">#ifdef __cplusplus
+</span><span style="color:#75715e"></span>}
+<span style="color:#75715e">#endif
+</span></code></pre></div><h3 id="强符号与弱符号">强符号与弱符号</h3>
+<p>我们有时编译时会遇到 multiple definition of &ldquo;&quot;,这种多重定义问题
+比如在两个不同的文件定义名称相同的全局变量</p>
+<p>这主要是因为编译器区分强符号和弱符号(针对定义,不针对引用)
+对于gcc来说,函数和初始化了的全局变量为强符号,未初始化的为弱符号</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">extern</span> <span style="color:#66d9ef">int</span> ext;
+
+<span style="color:#66d9ef">int</span> weak;
+<span style="color:#66d9ef">int</span> strong<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>;
+__attribute__((weak)) weak2<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>;
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(){
+
+}
+</code></pre></div><p>其中extern int并非定义,而是对其他符号的引用,既不是强符号也不是弱符号
+stong和mian()为强符号
+我们也可以用__attribute__() 来指定符号强弱
+强弱符号的链接使用如下规则</p>
+<ul>
+<li>不允许强符号重定义,这就是多重定义的原因</li>
+<li>如果一个符号在某个文件中是强符号,在其他文件里都是弱符号,那么选择强符号</li>
+<li>如果一个符号在所有目标文件都是弱符号,那么选择其中占用空间最大的
+特别注意,以上规则适用于链接期,不要扯到文件内的名称空间问题</li>
+</ul>
+<h3 id="弱引用和强引用">弱引用和强引用</h3>
+<p>当我们所看到的对外部目标文件的符号引用在目标文件中被链接成可执行文件时,他们必须要被正确决议,如果没有找到该符号定义,连接器就会报符号未定义的错误,这种被称为强引用
+还有另外一种叫弱引用,在处理弱引用时,如果该符号有定义,则连接器将该符号的引用决议,如果未定义,那么就和强引用的表现一样了
+比如,弱引用可以实现功能的裁剪</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">foo</span>() __attribute__((weak));
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+{
+        <span style="color:#66d9ef">if</span>(foo)
+                foo();
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><p>这样是可以通过编译和链接的,由于foo()是弱引用,那么它使可以被强引用覆盖的,这样就能实现foo()函数的功能剪裁,可以在链接期来决定foo()函数是什么,会不会运行</p>
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wuliaotc.github.io/tags/c/">c</a>
+          <a href="https://wuliaotc.github.io/tags/c&#43;&#43;/">c&#43;&#43;</a>
+          <a href="https://wuliaotc.github.io/tags/gcc/">gcc</a>
+          <a href="https://wuliaotc.github.io/tags/elf/">elf</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/linux%E5%85%A5%E9%97%A8/linux%E5%85%A5%E9%97%A8/">
+            <span class="next-text nav-default">Linux入门</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="http://github.com/wuliaotc" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://wuliaotc.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2019 -
+    2020
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        wuliaotc
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
