@@ -6,7 +6,7 @@
     <description>Recent content on wuliaotc 的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 20 Aug 2017 21:38:52 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 26 Jul 2020 13:06:53 +0800</lastBuildDate>
     
         <atom:link href="https://wuliaotc.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -27,6 +27,60 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/spf13/cast&#34;&gt;Cast&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Learn more and contribute on &lt;a href=&#34;https://github.com/gohugoio&#34;&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+</description>
+      
+    </item>
+    
+    <item>
+      <title>编译python</title>
+      <link>https://wuliaotc.github.io/post/python%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90/%E7%BC%96%E8%AF%91python/</link>
+      <pubDate>Sun, 26 Jul 2020 13:06:53 +0800</pubDate>
+      
+      <guid>https://wuliaotc.github.io/post/python%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90/%E7%BC%96%E8%AF%91python/</guid>
+      
+        <description>&lt;p&gt;环境搭建略
+下载python源代码 并切换到3.9分支&lt;/p&gt;
+&lt;h2 id=&#34;python目录&#34;&gt;python目录&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;.
+├── aclocal.m4
+├── CODE_OF_CONDUCT.md
+├── config.guess
+├── config.log
+├── config.status
+├── config.sub
+├── configure
+├── configure.ac
+├── Doc
+├── Grammar
+├── Include			c语言头文件
+├── install-sh
+├── Lib				python标准库,用python写的
+├── LICENSE
+├── m4
+├── Mac
+├── Makefile
+├── Makefile.pre
+├── Makefile.pre.in
+├── Misc
+├── Modules			c语言编写模块
+├── netlify.toml
+├── Objects			python所有内建对象
+├── Parser			python解释器的scanner和parser,词法解析和语法解析
+├── Path
+├── PC
+├── PCbuild
+├── Programs
+├── pyconfig.h
+├── pyconfig.h.in
+├── Python			python解释器的complier和执行引擎
+
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;编译python&#34;&gt;编译python&lt;/h2&gt;
+&lt;p&gt;老规矩,三步走起&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;./configure -prefix=/home/andy/github/cpython/Path
+make -j8
+mak install
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;接下来我们编译的python会被安装到指定目录&lt;/p&gt;
 </description>
       
     </item>
