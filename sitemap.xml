@@ -9,15 +9,50 @@
   </url>
   
   <url>
+    <loc>https://wuliaotc.github.io/tags/archlinux/</loc>
+    <lastmod>2020-07-28T20:56:10+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://wuliaotc.github.io/categories/</loc>
-    <lastmod>2020-07-26T13:06:53+08:00</lastmod>
+    <lastmod>2020-07-28T20:56:10+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://wuliaotc.github.io/post/</loc>
-    <lastmod>2020-07-26T13:06:53+08:00</lastmod>
+    <lastmod>2020-07-28T20:56:10+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://wuliaotc.github.io/tags/</loc>
+    <lastmod>2020-07-28T20:56:10+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://wuliaotc.github.io/</loc>
+    <lastmod>2020-07-28T20:56:10+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://wuliaotc.github.io/post/dim-sum/%E5%9C%A8archlinux%E4%B8%8A%E8%BF%90%E8%A1%8Cdim-sum/</loc>
+    <lastmod>2020-07-28T20:56:10+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://wuliaotc.github.io/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/</loc>
+    <lastmod>2020-07-28T20:56:10+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -31,20 +66,6 @@
   
   <url>
     <loc>https://wuliaotc.github.io/categories/python/</loc>
-    <lastmod>2020-07-26T13:06:53+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://wuliaotc.github.io/tags/</loc>
-    <lastmod>2020-07-26T13:06:53+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://wuliaotc.github.io/</loc>
     <lastmod>2020-07-26T13:06:53+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

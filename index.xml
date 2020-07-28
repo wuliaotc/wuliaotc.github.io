@@ -6,7 +6,7 @@
     <description>Recent content on wuliaotc 的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 26 Jul 2020 13:06:53 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 28 Jul 2020 20:56:10 +0800</lastBuildDate>
     
         <atom:link href="https://wuliaotc.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -27,6 +27,68 @@
 &lt;li&gt;&lt;a href=&#34;https://github.com/spf13/cast&#34;&gt;Cast&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Learn more and contribute on &lt;a href=&#34;https://github.com/gohugoio&#34;&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+</description>
+      
+    </item>
+    
+    <item>
+      <title>在archlinux上运行dim Sum</title>
+      <link>https://wuliaotc.github.io/post/dim-sum/%E5%9C%A8archlinux%E4%B8%8A%E8%BF%90%E8%A1%8Cdim-sum/</link>
+      <pubDate>Tue, 28 Jul 2020 20:56:10 +0800</pubDate>
+      
+      <guid>https://wuliaotc.github.io/post/dim-sum/%E5%9C%A8archlinux%E4%B8%8A%E8%BF%90%E8%A1%8Cdim-sum/</guid>
+      
+        <description>&lt;p&gt;前几天正好看见一本新书出来了,叫做《自研操作系统：DIM-SUM的设计与实现》。作者是一位工作二十多年的行业大牛，我平时也对操作系统十分感兴趣，但又屡次被linux内核的复杂度劝退。我决定买下来试试看。
+该操作系统运行在arm64上，我们可以使用qemu来模拟运行环境。
+我平时用的比较多的是archlinux,因此我将在archlinux下部署环境。
+首先是前置准备工作：
+首先qemu相关组件需要安装。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# pacman -S qemu qemu-arch-extra&lt;/span&gt; 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;dim-sum使用了virtio系列的驱动来进行硬件的虚拟化，virtio有关内容见archwiki ​&lt;a href=&#34;https://wiki.archlinux.org/index.php/QEMU&#34;&gt;qemu&lt;/a&gt;
+先说说我踩的坑，我遇到的问题是网络相关问题，有个叫/etc/qemu-if的脚本报错 256 status code。
+经过一段时间的摸索和阅读archwiki,我找到了解决方案。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;首先：安装bridge-utils,目的是获取brctl命令&lt;/li&gt;
+&lt;li&gt;开启ipv4 转发，我使用sysctl临时启用的，因为不想一直开着这个选项。大家嫌麻烦可以在配置文件中写好后重载设置。&lt;/li&gt;
+&lt;li&gt;加载 tun 内核模块创建一个网桥br0&lt;/li&gt;
+&lt;li&gt;最后创建脚本后修改用户和权限就ok了&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;# pacman -S bridge-utils&lt;/span&gt;
+    &lt;span style=&#34;color:#75715e&#34;&gt;# sysctl net.ipv4.ip_forward=1&lt;/span&gt;
+    &lt;span style=&#34;color:#75715e&#34;&gt;# modprobe -a tun&lt;/span&gt;
+    &lt;span style=&#34;color:#75715e&#34;&gt;# ip link add name br0 type bridge&lt;/span&gt;
+    # 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;下面是创建的脚本和内容：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;/etc/qemu-ifup
+
+&lt;span style=&#34;color:#75715e&#34;&gt;#!/bin/sh&lt;/span&gt;
+
+echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Executing /etc/qemu-ifup&amp;#34;&lt;/span&gt;
+echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Bringing up &lt;/span&gt;$1&lt;span style=&#34;color:#e6db74&#34;&gt; for bridged mode...&amp;#34;&lt;/span&gt;
+sudo /usr/bin/ip link set $1 up promisc on
+echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Adding &lt;/span&gt;$1&lt;span style=&#34;color:#e6db74&#34;&gt; to br0...&amp;#34;&lt;/span&gt;
+sudo /usr/bin/brctl addif br0 $1
+sleep &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+
+
+/etc/qemu-ifdown
+
+&lt;span style=&#34;color:#75715e&#34;&gt;#!/bin/sh&lt;/span&gt;
+
+echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Executing /etc/qemu-ifdown&amp;#34;&lt;/span&gt;
+sudo /usr/bin/ip link set $1 down
+sudo /usr/bin/brctl delif br0 $1
+sudo /usr/bin/ip link delete dev $1
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;最后修改权限和用户组&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# chmod 750 /etc/qemu-ifup&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# chmod 750 /etc/qemu-ifdown&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# chown root:kvm /etc/qemu-ifup&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# chown root:kvm /etc/qemu-ifdown&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用visudo加入如下内容：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;Cmnd_Alias      QEMU&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/usr/bin/ip,/usr/bin/modprobe,/usr/bin/brctl
+%kvm     ALL&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;NOPASSWD: QEMU
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;后面就是拉源码然后编译运行了。&lt;/p&gt;
 </description>
       
     </item>

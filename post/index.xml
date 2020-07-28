@@ -6,10 +6,19 @@
     <description>Recent content in Posts on wuliaotc 的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 26 Jul 2020 13:06:53 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 28 Jul 2020 20:56:10 +0800</lastBuildDate>
     
 	<atom:link href="https://wuliaotc.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>在archlinux上运行dim Sum</title>
+      <link>https://wuliaotc.github.io/post/dim-sum/%E5%9C%A8archlinux%E4%B8%8A%E8%BF%90%E8%A1%8Cdim-sum/</link>
+      <pubDate>Tue, 28 Jul 2020 20:56:10 +0800</pubDate>
+      
+      <guid>https://wuliaotc.github.io/post/dim-sum/%E5%9C%A8archlinux%E4%B8%8A%E8%BF%90%E8%A1%8Cdim-sum/</guid>
+      <description>前几天正好看见一本新书出来了,叫做《自研操作系统：DIM-SUM的设计与实现》。作者是一位工作二十多年的行业大牛，我平时也对操作系统十分感兴</description>
+    </item>
     
     <item>
       <title>编译python</title>
