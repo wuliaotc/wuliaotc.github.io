@@ -69,7 +69,7 @@
 <meta itemprop="description" content="前几天正好看见一本新书出来了,叫做《自研操作系统：DIM-SUM的设计与实现》。作者是一位工作二十多年的行业大牛，我平时也对操作系统十分感兴">
 <meta itemprop="datePublished" content="2020-07-28T20:56:10&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-28T20:56:10&#43;08:00" />
-<meta itemprop="wordCount" content="605">
+<meta itemprop="wordCount" content="697">
 
 
 
@@ -413,6 +413,13 @@ sudo /usr/bin/ip link delete dev $1
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">Cmnd_Alias      QEMU<span style="color:#f92672">=</span>/usr/bin/ip,/usr/bin/modprobe,/usr/bin/brctl
 %kvm     ALL<span style="color:#f92672">=</span>NOPASSWD: QEMU
 </code></pre></div><p>后面就是拉源码然后编译运行了。</p>
+<p>这里我们可以使用gcc10而不是附带的编译器进行编译</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"> <span style="color:#75715e"># pacman -S aarch64-linux-gnu-gcc aarch64-linux-gnu-gdb</span>
+</code></pre></div><p>修改Makefile kernel 部分,像这样:</p>
+<pre><code>CROSS_COMPILE=aarch64-linux-gnu- Image dtbs
+</code></pre><p>最后gcc10会有两个位置编译报错,类似这样(把他注释掉):</p>
+<pre><code>#include gcc_header(__GNUC__)
+</code></pre><p>最后编译,享受!</p>
 
     </div>
 

@@ -89,6 +89,13 @@ sudo /usr/bin/ip link delete dev $1
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;Cmnd_Alias      QEMU&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;/usr/bin/ip,/usr/bin/modprobe,/usr/bin/brctl
 %kvm     ALL&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;NOPASSWD: QEMU
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;后面就是拉源码然后编译运行了。&lt;/p&gt;
+&lt;p&gt;这里我们可以使用gcc10而不是附带的编译器进行编译&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# pacman -S aarch64-linux-gnu-gcc aarch64-linux-gnu-gdb&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;修改Makefile kernel 部分,像这样:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;CROSS_COMPILE=aarch64-linux-gnu- Image dtbs
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;最后gcc10会有两个位置编译报错,类似这样(把他注释掉):&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#include gcc_header(__GNUC__)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;最后编译,享受!&lt;/p&gt;
 </description>
       
     </item>
