@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.73.0" />
+<meta name="generator" content="Hugo 0.74.3" />
 
 
 <link rel="canonical" href="https://wuliaotc.github.io/post/elf_analysis/elf_analysis/" />
@@ -67,13 +67,14 @@
 <meta property="article:modified_time" content="2020-05-21T00:06:24+08:00" />
 <meta itemprop="name" content="ELF_analysis">
 <meta itemprop="description" content="">
-<meta itemprop="datePublished" content="2020-05-21T00:06:24&#43;08:00" />
-<meta itemprop="dateModified" content="2020-05-21T00:06:24&#43;08:00" />
-<meta itemprop="wordCount" content="1956">
+<meta itemprop="datePublished" content="2020-05-21T00:06:24+08:00" />
+<meta itemprop="dateModified" content="2020-05-21T00:06:24+08:00" />
+<meta itemprop="wordCount" content="2116">
 
 
 
-<meta itemprop="keywords" content="c,c&#43;&#43;,gcc,elf," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="c,c&#43;&#43;,gcc,elf," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="ELF_analysis"/>
 <meta name="twitter:description" content=""/>
 
@@ -361,100 +362,213 @@
     <div class="post-content">
       <h2 id="elf文件分析">ELF文件分析</h2>
 <p>首先我们写一个样例程序</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">printf</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>format, ...);
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c++" data-lang="c++"><span class="kt">int</span> <span class="nf">printf</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">format</span><span class="p">,</span> <span class="p">...);</span>
 
-<span style="color:#66d9ef">int</span> global_init_var <span style="color:#f92672">=</span> <span style="color:#ae81ff">84</span>;<span style="color:#75715e">//全局
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> global_unint_var;
+<span class="kt">int</span> <span class="n">global_init_var</span> <span class="o">=</span> <span class="mi">84</span><span class="p">;</span><span class="c1">//全局
+</span><span class="c1"></span><span class="kt">int</span> <span class="n">global_unint_var</span><span class="p">;</span>
 
-<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">func1</span>(<span style="color:#66d9ef">int</span> i) { printf(<span style="color:#e6db74">&#34;%d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, i); }
+<span class="kt">void</span> <span class="nf">func1</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span> <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span> <span class="p">}</span>
 
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>) {
-	<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> static_var <span style="color:#f92672">=</span> <span style="color:#ae81ff">85</span>;<span style="color:#75715e">//静态
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> static_var2;
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">static</span> <span class="kt">int</span> <span class="n">static_var</span> <span class="o">=</span> <span class="mi">85</span><span class="p">;</span><span class="c1">//静态
+</span><span class="c1"></span>	<span class="k">static</span> <span class="kt">int</span> <span class="n">static_var2</span><span class="p">;</span>
 
-	<span style="color:#66d9ef">int</span> a <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;<span style="color:#75715e">//局部
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">int</span> b;
+	<span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span><span class="c1">//局部
+</span><span class="c1"></span>	<span class="kt">int</span> <span class="n">b</span><span class="p">;</span>
 
-	<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> c <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;<span style="color:#75715e">//常量
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> d <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
-	(<span style="color:#66d9ef">void</span>)d;
+	<span class="k">static</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span><span class="c1">//常量
+</span><span class="c1"></span>	<span class="k">static</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">d</span><span class="p">;</span>
 
-	func1(static_var <span style="color:#f92672">+</span> static_var2 <span style="color:#f92672">+</span> a <span style="color:#f92672">+</span> b);
+	<span class="n">func1</span><span class="p">(</span><span class="n">static_var</span> <span class="o">+</span> <span class="n">static_var2</span> <span class="o">+</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">);</span>
 
-	<span style="color:#66d9ef">return</span> a;
-}
+	<span class="k">return</span> <span class="n">a</span><span class="p">;</span>
+<span class="p">}</span>
 
-</code></pre></div><p>然后使用</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">gcc -c simpleSection.c
+</code></pre></td></tr></table>
+</div>
+</div><p>然后使用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">gcc -c simpleSection.c
 objdump -h simpleSection.o 
-</code></pre></div><p><img src="/post/ELF_analysis/objdump.png" alt="avatar">
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="/post/ELF_analysis/objdump.png" alt="avatar">
 <img src="/post/ELF_analysis/struct.drawio.svg" alt="avatar"></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">使用objdump挖掘代码段内容 -d代表反汇编
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">使用objdump挖掘代码段内容 -d代表反汇编
 
 objdump -s -d simpleSection.o 
 
 simpleSection.o：     文件格式 elf64-x86-64
 
 .text 區段的內容： 指令内容
- <span style="color:#ae81ff">0000</span> 554889e5 4883ec10 897dfc8b 45fc89c6  UH..H....<span style="color:#f92672">}</span>..E...
- <span style="color:#ae81ff">0010</span> 488d3d00 000000b8 <span style="color:#ae81ff">00000000</span> e8000000  H.<span style="color:#f92672">=</span>.............
- <span style="color:#ae81ff">0020</span> 0090c9c3 554889e5 4883ec10 c745f801  ....UH..H....E..
- <span style="color:#ae81ff">0030</span> 0000008b <span style="color:#ae81ff">15000000</span> 008b0500 <span style="color:#ae81ff">00000001</span>  ................
- <span style="color:#ae81ff">0040</span> c28b45f8 01c28b45 fc01d089 c7e80000  ..E....E........
- <span style="color:#ae81ff">0050</span> 00008b45 f8c9c3                      ...E...         
+ <span class="m">0000</span> 554889e5 4883ec10 897dfc8b 45fc89c6  UH..H....<span class="o">}</span>..E...
+ <span class="m">0010</span> 488d3d00 000000b8 <span class="m">00000000</span> e8000000  H.<span class="o">=</span>.............
+ <span class="m">0020</span> 0090c9c3 554889e5 4883ec10 c745f801  ....UH..H....E..
+ <span class="m">0030</span> 0000008b <span class="m">15000000</span> 008b0500 <span class="m">00000001</span>  ................
+ <span class="m">0040</span> c28b45f8 01c28b45 fc01d089 c7e80000  ..E....E........
+ <span class="m">0050</span> 00008b45 f8c9c3                      ...E...         
 .data 區段的內容：存放非0初始化的全局变量和静态变量
  分别对应global_init_var和static_var
- <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">54000000</span> <span style="color:#ae81ff">55000000</span>                    T...U...        
-.rodata 區段的內容：对应 <span style="color:#e6db74">&#34;%d\n&#34;</span> 和两个static int 证明这里int为32位
- <span style="color:#ae81ff">0000</span> 25640a00 <span style="color:#ae81ff">01000000</span> <span style="color:#ae81ff">01000000</span>           %d..........    
+ <span class="m">0000</span> <span class="m">54000000</span> <span class="m">55000000</span>                    T...U...        
+.rodata 區段的內容：对应 <span class="s2">&#34;%d\n&#34;</span> 和两个static int 证明这里int为32位
+ <span class="m">0000</span> 25640a00 <span class="m">01000000</span> <span class="m">01000000</span>           %d..........    
 .comment 區段的內容：
- <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">00474343</span> 3a202847 4e552920 31302e31  .GCC: <span style="color:#f92672">(</span>GNU<span style="color:#f92672">)</span> 10.1
- <span style="color:#ae81ff">0010</span> 2e3000                               .0.             
+ <span class="m">0000</span> <span class="m">00474343</span> 3a202847 4e552920 31302e31  .GCC: <span class="o">(</span>GNU<span class="o">)</span> 10.1
+ <span class="m">0010</span> 2e3000                               .0.             
 .eh_frame 區段的內容：
- <span style="color:#ae81ff">0000</span> <span style="color:#ae81ff">14000000</span> <span style="color:#ae81ff">00000000</span> 017a5200 <span style="color:#ae81ff">01781001</span>  .........zR..x..
- <span style="color:#ae81ff">0010</span> 1b0c0708 <span style="color:#ae81ff">90010000</span> 1c000000 1c000000  ................
- <span style="color:#ae81ff">0020</span> <span style="color:#ae81ff">00000000</span> <span style="color:#ae81ff">24000000</span> 00410e10 8602430d  ....$....A....C.
- <span style="color:#ae81ff">0030</span> 065f0c07 <span style="color:#ae81ff">08000000</span> 1c000000 3c000000  ._..........&lt;...
- <span style="color:#ae81ff">0040</span> <span style="color:#ae81ff">00000000</span> <span style="color:#ae81ff">33000000</span> 00410e10 8602430d  ....3....A....C.
- <span style="color:#ae81ff">0050</span> 066e0c07 <span style="color:#ae81ff">08000000</span>                    .n......        
+ <span class="m">0000</span> <span class="m">14000000</span> <span class="m">00000000</span> 017a5200 <span class="m">01781001</span>  .........zR..x..
+ <span class="m">0010</span> 1b0c0708 <span class="m">90010000</span> 1c000000 1c000000  ................
+ <span class="m">0020</span> <span class="m">00000000</span> <span class="m">24000000</span> 00410e10 8602430d  ....$....A....C.
+ <span class="m">0030</span> 065f0c07 <span class="m">08000000</span> 1c000000 3c000000  ._..........&lt;...
+ <span class="m">0040</span> <span class="m">00000000</span> <span class="m">33000000</span> 00410e10 8602430d  ....3....A....C.
+ <span class="m">0050</span> 066e0c07 <span class="m">08000000</span>                    .n......        
 
 .text 區段的反組譯：
 
-<span style="color:#ae81ff">0000000000000000</span> &lt;_Z5func1i&gt;:
-   0:   <span style="color:#ae81ff">55</span>                      push   %rbp
-   1:   <span style="color:#ae81ff">48</span> <span style="color:#ae81ff">89</span> e5                mov    %rsp,%rbp
-   4:   <span style="color:#ae81ff">48</span> <span style="color:#ae81ff">83</span> ec <span style="color:#ae81ff">10</span>             sub    $0x10,%rsp
-   8:   <span style="color:#ae81ff">89</span> 7d fc                mov    %edi,-0x4<span style="color:#f92672">(</span>%rbp<span style="color:#f92672">)</span>
-   b:   8b <span style="color:#ae81ff">45</span> fc                mov    -0x4<span style="color:#f92672">(</span>%rbp<span style="color:#f92672">)</span>,%eax
-   e:   <span style="color:#ae81ff">89</span> c6                   mov    %eax,%esi
-  10:   <span style="color:#ae81ff">48</span> 8d 3d <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>    lea    0x0<span style="color:#f92672">(</span>%rip<span style="color:#f92672">)</span>,%rdi        <span style="color:#75715e"># 17 &lt;_Z5func1i+0x17&gt;</span>
-  17:   b8 <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>          mov    $0x0,%eax
-  1c:   e8 <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>          callq  <span style="color:#ae81ff">21</span> &lt;_Z5func1i+0x21&gt;
-  21:   <span style="color:#ae81ff">90</span>                      nop
+<span class="m">0000000000000000</span> &lt;_Z5func1i&gt;:
+   0:   <span class="m">55</span>                      push   %rbp
+   1:   <span class="m">48</span> <span class="m">89</span> e5                mov    %rsp,%rbp
+   4:   <span class="m">48</span> <span class="m">83</span> ec <span class="m">10</span>             sub    <span class="nv">$0</span>x10,%rsp
+   8:   <span class="m">89</span> 7d <span class="nb">fc</span>                mov    %edi,-0x4<span class="o">(</span>%rbp<span class="o">)</span>
+   b:   8b <span class="m">45</span> <span class="nb">fc</span>                mov    -0x4<span class="o">(</span>%rbp<span class="o">)</span>,%eax
+   e:   <span class="m">89</span> c6                   mov    %eax,%esi
+  10:   <span class="m">48</span> 8d 3d <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>    lea    0x0<span class="o">(</span>%rip<span class="o">)</span>,%rdi        <span class="c1"># 17 &lt;_Z5func1i+0x17&gt;</span>
+  17:   b8 <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>          mov    <span class="nv">$0</span>x0,%eax
+  1c:   e8 <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>          callq  <span class="m">21</span> &lt;_Z5func1i+0x21&gt;
+  21:   <span class="m">90</span>                      nop
   22:   c9                      leaveq 
   23:   c3                      retq   
 
-<span style="color:#ae81ff">0000000000000024</span> &lt;main&gt;:
-  24:   <span style="color:#ae81ff">55</span>                      push   %rbp
-  25:   <span style="color:#ae81ff">48</span> <span style="color:#ae81ff">89</span> e5                mov    %rsp,%rbp
-  28:   <span style="color:#ae81ff">48</span> <span style="color:#ae81ff">83</span> ec <span style="color:#ae81ff">10</span>             sub    $0x10,%rsp
-  2c:   c7 <span style="color:#ae81ff">45</span> f8 <span style="color:#ae81ff">01</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>    movl   $0x1,-0x8<span style="color:#f92672">(</span>%rbp<span style="color:#f92672">)</span>
-  33:   8b <span style="color:#ae81ff">15</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>       mov    0x0<span style="color:#f92672">(</span>%rip<span style="color:#f92672">)</span>,%edx        <span style="color:#75715e"># 39 &lt;main+0x15&gt;</span>
-  39:   8b <span style="color:#ae81ff">05</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>       mov    0x0<span style="color:#f92672">(</span>%rip<span style="color:#f92672">)</span>,%eax        <span style="color:#75715e"># 3f &lt;main+0x1b&gt;</span>
-  3f:   <span style="color:#ae81ff">01</span> c2                   add    %eax,%edx
-  41:   8b <span style="color:#ae81ff">45</span> f8                mov    -0x8<span style="color:#f92672">(</span>%rbp<span style="color:#f92672">)</span>,%eax
-  44:   <span style="color:#ae81ff">01</span> c2                   add    %eax,%edx
-  46:   8b <span style="color:#ae81ff">45</span> fc                mov    -0x4<span style="color:#f92672">(</span>%rbp<span style="color:#f92672">)</span>,%eax
-  49:   <span style="color:#ae81ff">01</span> d0                   add    %edx,%eax
-  4b:   <span style="color:#ae81ff">89</span> c7                   mov    %eax,%edi
-  4d:   e8 <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>          callq  <span style="color:#ae81ff">52</span> &lt;main+0x2e&gt;
-  52:   8b <span style="color:#ae81ff">45</span> f8                mov    -0x8<span style="color:#f92672">(</span>%rbp<span style="color:#f92672">)</span>,%eax
+<span class="m">0000000000000024</span> &lt;main&gt;:
+  24:   <span class="m">55</span>                      push   %rbp
+  25:   <span class="m">48</span> <span class="m">89</span> e5                mov    %rsp,%rbp
+  28:   <span class="m">48</span> <span class="m">83</span> ec <span class="m">10</span>             sub    <span class="nv">$0</span>x10,%rsp
+  2c:   c7 <span class="m">45</span> f8 <span class="m">01</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>    movl   <span class="nv">$0</span>x1,-0x8<span class="o">(</span>%rbp<span class="o">)</span>
+  33:   8b <span class="m">15</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>       mov    0x0<span class="o">(</span>%rip<span class="o">)</span>,%edx        <span class="c1"># 39 &lt;main+0x15&gt;</span>
+  39:   8b <span class="m">05</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>       mov    0x0<span class="o">(</span>%rip<span class="o">)</span>,%eax        <span class="c1"># 3f &lt;main+0x1b&gt;</span>
+  3f:   <span class="m">01</span> c2                   add    %eax,%edx
+  41:   8b <span class="m">45</span> f8                mov    -0x8<span class="o">(</span>%rbp<span class="o">)</span>,%eax
+  44:   <span class="m">01</span> c2                   add    %eax,%edx
+  46:   8b <span class="m">45</span> <span class="nb">fc</span>                mov    -0x4<span class="o">(</span>%rbp<span class="o">)</span>,%eax
+  49:   <span class="m">01</span> d0                   add    %edx,%eax
+  4b:   <span class="m">89</span> c7                   mov    %eax,%edi
+  4d:   e8 <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>          callq  <span class="m">52</span> &lt;main+0x2e&gt;
+  52:   8b <span class="m">45</span> f8                mov    -0x8<span class="o">(</span>%rbp<span class="o">)</span>,%eax
   55:   c9                      leaveq 
   56:   c3                      retq   
 
-</code></pre></div><p>使用readelf 查看文件</p>
-<pre><code>readelf  -h simpleSection.o 
-</code></pre><p><img src="/post/ELF_analysis/readelf.png" alt="avatar"></p>
+</code></pre></td></tr></table>
+</div>
+</div><p>使用readelf 查看文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">readelf  -h simpleSection.o 
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="/post/ELF_analysis/readelf.png" alt="avatar"></p>
 <h3 id="符号表">符号表</h3>
 <p>符号是链接的接口,如果目标文件B要使用目标文件A中的函数&quot;foo,我们称目标文件A定义了foo,称目标文件B引用了&quot;foo&rdquo;。</p>
 <h4 id="符号的种类">符号的种类</h4>
@@ -466,7 +580,22 @@ simpleSection.o：     文件格式 elf64-x86-64
 <li>行号信息,即目标文件指令与源代码中代码行的对应关系</li>
 </ul>
 <h4 id="使用nm查看符号表">使用nm查看符号表</h4>
-<pre><code>nm simpleSection.o 
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">nm simpleSection.o 
 0000000000000000 D global_init_var
                  U _GLOBAL_OFFSET_TABLE_
 0000000000000000 B global_unint_var
@@ -477,10 +606,39 @@ simpleSection.o：     文件格式 elf64-x86-64
 0000000000000004 b _ZZ4mainE11static_var2
 0000000000000004 r _ZZ4mainE1c
 0000000000000008 r _ZZ4mainE1d
-</code></pre><h4 id="使用readelf查看符号表">使用readelf查看符号表</h4>
-<pre><code>readelf -s simpleSection.o                                                             
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="使用readelf查看符号表">使用readelf查看符号表</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">readelf -s simpleSection.o                                                             
 
-Symbol table '.symtab' contains 19 entries:
+Symbol table &#39;.symtab&#39; contains 19 entries:
   編號:    值             大小 類型    約束   版本     索引名稱
      0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND 
      1: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS simpleSection.c
@@ -501,24 +659,45 @@ Symbol table '.symtab' contains 19 entries:
     16: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND _GLOBAL_OFFSET_TABLE_ 未定义,说明这是外部符号
     17: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND _Z6printfPKcz          未定义,说明这是外部符号
     18: 0000000000000024    51 FUNC    GLOBAL DEFAULT    1 main
-</code></pre><h2 id="extern-c的作用">extern &ldquo;c&quot;的作用</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="extern-c的作用">extern &ldquo;c&quot;的作用</h2>
 <p>我们可以看到,我们视同c++ 编译后,变量和函数前都会有一些莫名其妙的东西比如 _ZZ4mainE11static_var2
 一般来说,_Z开头说明使用了c++的规范
 我们可以做一个小实验</p>
-<pre><code>#include&lt;stdio.h&gt;
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">#include&lt;stdio.h&gt;
  
 namespace names{
 |   int var=3;
 }
 
-extern &quot;C&quot; int _name;
+extern &#34;C&#34; int _name;
 
 int main(){
-    printf(&quot;%d\n&quot;,_name);
+    printf(&#34;%d\n&#34;,_name);
     return 0;
 }
 
-</code></pre><p>编译后使用readelf查看他的符号表,其中有这样一条
+</code></pre></td></tr></table>
+</div>
+</div><p>编译后使用readelf查看他的符号表,其中有这样一条
 4 OBJECT  GLOBAL DEFAULT    3 _ZN5names3varE
 0 NOTYPE  GLOBAL DEFAULT    UND _name
 可以看到,我们有一个 UND即未定义的_name
@@ -526,29 +705,58 @@ int main(){
 我们将代码修改一下,将_name,修改为_ZN5names3varE
 然后执行,发现输出的正是var的值,这说明extern &ldquo;C&quot;的作用只是改变变量的命名规范</p>
 <h3 id="注意c语言不支持extern-c">注意c语言不支持extern &ldquo;c&rdquo;</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#960050;background-color:#1e0010">我们一般这样使用</span>
-<span style="color:#75715e">#ifdef __cplusplus
-</span><span style="color:#75715e"></span>extenrn <span style="color:#e6db74">&#34;C&#34;</span>{
-<span style="color:#75715e">#endif
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">foo</span>();
-<span style="color:#75715e">#ifdef __cplusplus
-</span><span style="color:#75715e"></span>}
-<span style="color:#75715e">#endif
-</span></code></pre></div><h3 id="强符号与弱符号">强符号与弱符号</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c++" data-lang="c++"><span class="err">我们一般这样使用</span>
+<span class="cp">#ifdef __cplusplus
+</span><span class="cp"></span><span class="n">extenrn</span> <span class="s">&#34;C&#34;</span><span class="p">{</span>
+<span class="cp">#endif
+</span><span class="cp"></span>  <span class="kt">void</span> <span class="nf">foo</span><span class="p">();</span>
+<span class="cp">#ifdef __cplusplus
+</span><span class="cp"></span><span class="p">}</span>
+<span class="cp">#endif
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="强符号与弱符号">强符号与弱符号</h3>
 <p>我们有时编译时会遇到 multiple definition of &ldquo;&quot;,这种多重定义问题
 比如在两个不同的文件定义名称相同的全局变量</p>
 <p>这主要是因为编译器区分强符号和弱符号(针对定义,不针对引用)
 对于gcc来说,函数和初始化了的全局变量为强符号,未初始化的为弱符号</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">extern</span> <span style="color:#66d9ef">int</span> ext;
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c++" data-lang="c++"><span class="k">extern</span> <span class="kt">int</span> <span class="n">ext</span><span class="p">;</span>
 
-<span style="color:#66d9ef">int</span> weak;
-<span style="color:#66d9ef">int</span> strong<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>;
-__attribute__((weak)) weak2<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>;
+<span class="kt">int</span> <span class="n">weak</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">strong</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span>
+<span class="n">__attribute__</span><span class="p">((</span><span class="n">weak</span><span class="p">))</span> <span class="n">weak2</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span>
 
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(){
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
 
-}
-</code></pre></div><p>其中extern int并非定义,而是对其他符号的引用,既不是强符号也不是弱符号
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中extern int并非定义,而是对其他符号的引用,既不是强符号也不是弱符号
 stong和mian()为强符号
 我们也可以用__attribute__() 来指定符号强弱
 强弱符号的链接使用如下规则</p>
@@ -562,14 +770,27 @@ stong和mian()为强符号
 <p>当我们所看到的对外部目标文件的符号引用在目标文件中被链接成可执行文件时,他们必须要被正确决议,如果没有找到该符号定义,连接器就会报符号未定义的错误,这种被称为强引用
 还有另外一种叫弱引用,在处理弱引用时,如果该符号有定义,则连接器将该符号的引用决议,如果未定义,那么就和强引用的表现一样了
 比如,弱引用可以实现功能的裁剪</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">foo</span>() __attribute__((weak));
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
-{
-        <span style="color:#66d9ef">if</span>(foo)
-                foo();
-        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-}
-</code></pre></div><p>这样是可以通过编译和链接的,由于foo()是弱引用,那么它使可以被强引用覆盖的,这样就能实现foo()函数的功能剪裁,可以在链接期来决定foo()函数是什么,会不会运行</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c++" data-lang="c++"><span class="kt">int</span> <span class="nf">foo</span><span class="p">()</span> <span class="n">__attribute__</span><span class="p">((</span><span class="n">weak</span><span class="p">));</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+                <span class="n">foo</span><span class="p">();</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这样是可以通过编译和链接的,由于foo()是弱引用,那么它使可以被强引用覆盖的,这样就能实现foo()函数的功能剪裁,可以在链接期来决定foo()函数是什么,会不会运行</p>
     </div>
 
     

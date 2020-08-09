@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.73.0" />
+<meta name="generator" content="Hugo 0.74.3" />
 
 
 <link rel="canonical" href="https://wuliaotc.github.io/post/linux%E5%85%A5%E9%97%A8/linux%E5%85%A5%E9%97%A8/" />
@@ -66,13 +66,14 @@
 <meta property="article:modified_time" content="2020-03-19T13:06:44+08:00" />
 <meta itemprop="name" content="Linux入门">
 <meta itemprop="description" content="linux入门文章">
-<meta itemprop="datePublished" content="2020-03-19T13:06:44&#43;08:00" />
-<meta itemprop="dateModified" content="2020-03-19T13:06:44&#43;08:00" />
-<meta itemprop="wordCount" content="2114">
+<meta itemprop="datePublished" content="2020-03-19T13:06:44+08:00" />
+<meta itemprop="dateModified" content="2020-03-19T13:06:44+08:00" />
+<meta itemprop="wordCount" content="2169">
 
 
 
-<meta itemprop="keywords" content="linux," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="linux," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Linux入门"/>
 <meta name="twitter:description" content="linux入门文章"/>
 
@@ -364,7 +365,26 @@
       <h1 id="linux入门">linux入门</h1>
 <h2 id="linux文件结构">linux文件结构</h2>
 <p>典型的linux目录如下：</p>
-<pre><code>/
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">/
 ├── bin bin是Binary（二进制程序）的缩写, 这个目录存放着最经常使用的命令
 ├── boot 
 ├── dev dev是Device(设备)的缩写, 该目录下存放的是Linux的外部设备，在Linux中访问设备的方式和访问文件的方式是相同的。
@@ -379,20 +399,57 @@
 ├── tmp 临时目录，通常是tmpfs，该目录中的文件实际上存储在内存中
 ├── usr
 └── var
-</code></pre><p>linux中目录是以树的结构出现的，所有目录都是以/根目录为根的一颗树</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>linux中目录是以树的结构出现的，所有目录都是以/根目录为根的一颗树</p>
 <h2 id="一切皆文件的思想">一切皆文件的思想</h2>
 <p>一切皆文件的思想是指几乎所有（目录、字符设备、块设备、套接字、打印机、进程、线程、管道等）都被映射到了linux文件树上，成为一个树上的一个节点。</p>
 <h3 id="举个例子">举个例子：</h3>
-<pre><code>/dev/sda  这是我的硬盘，在linux下被映射为了sd(x)
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">/dev/sda  这是我的硬盘，在linux下被映射为了sd(x)
 /dev/sda1 这是上述硬盘的第一个分区
 /dev/sda2 这是上述硬盘的第二个分区
-</code></pre><h2 id="linux文件权限">linux文件权限</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="linux文件权限">linux文件权限</h2>
 <p>linux是一个多用户多任务的操作系统，这意味着一个linux系统可以有多个用户同时登录并且同时执行多个任务。那么文件权限就是一个很重要的功能。</p>
-<pre><code>使用ls -l命令
-</code></pre><p><img src="/post/linux%E5%85%A5%E9%97%A8/%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90.png" alt="avatar"></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">使用ls -l命令
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="/post/linux%E5%85%A5%E9%97%A8/%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90.png" alt="avatar"></p>
 <h3 id="我们以图中shc-为例">我们以图中sh.c 为例</h3>
 <p>sh.c的权限为<code>- rw- r-- r--</code>(我们将它拆成四个部分,第一部分一个字符,其余部分3个字符)</p>
-<pre><code>第一部分的字符指定了该文件的类别,文件类型主要有以下几种:
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">第一部分的字符指定了该文件的类别,文件类型主要有以下几种:
 - 普通文件
 d 目录
 l 链接文件
@@ -407,7 +464,9 @@ p 管道文件
 其他人的权限                 r--
 
 其中 r代表read 可读;w代表write 可写;x代表可执行
-</code></pre><p>同时 文件权限也可以用数字(3个二进制值)来表示
+</code></pre></td></tr></table>
+</div>
+</div><p>同时 文件权限也可以用数字(3个二进制值)来表示
 权限|值
 &ndash;|:&ndash;:
 r|4|
@@ -415,17 +474,39 @@ w|2|
 x|1|
 比如上述权限可表示为 644 (4+2)(4)(4)</p>
 <h3 id="简单使用chmod修改文件权限简单点使用数字模式">简单使用chmod修改文件权限(简单点使用数字模式)</h3>
-<pre><code>chmod 666 sh.c
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">chmod 666 sh.c
 -rw-rw-rw-  1 andy andy  6129  1月 18 22:00 sh.c
-</code></pre><h2 id="shell简介">shell简介</h2>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="shell简介">shell简介</h2>
 <p>Unix shell，一种壳层与命令行界面，是UNIX操作系统下传统的用户和计算机的交互界面。用户直接输入命令来执行各种各样的任务。</p>
 <h3 id="cd命令">cd命令</h3>
 <p>当一个终端仿真器启动时，会默认工作目录在启动它的用户的主目录<code>/home/userName</code>，通常被简写为<code>~</code>。通过cd 命令，我们可以切换当前目录。</p>
-<pre><code>cd / 这个命令会让我们切换到根目录
-</code></pre><h3 id="ls命令">ls命令</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">cd / 这个命令会让我们切换到根目录
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="ls命令">ls命令</h3>
 <p>ls命令用于列出某个目录下的文件或目录（当然还有很多扩展用途）</p>
-<pre><code>ls -a 显示所有类型的文件或目录
-</code></pre><h4 id="特殊目录-和">特殊目录 <code>.</code>和<code>..</code></h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">ls -a 显示所有类型的文件或目录
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="特殊目录-和">特殊目录 <code>.</code>和<code>..</code></h4>
 <p><code>.</code>目录代表当前工作目录，<code>..</code>代表当前工作目录的父目录</p>
 <h4 id="链接-略">链接 略</h4>
 <h3 id="环境变量-这个我们应该了解过-略-维基百科-环境变量httpszhwikipediaorgwikie78eafe5a283e58f98e9878f">环境变量 这个我们应该了解过 略 <a href="https://zh.wikipedia.org/wiki/%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F">维基百科-环境变量</a></h3>
@@ -443,8 +524,15 @@ x|1|
 <li>内核例程 [非标准</li>
 </ol>
 <h3 id="使用man">使用man</h3>
-<pre><code>man man #man （命令名）
-</code></pre><p><img src="/post/linux%E5%85%A5%E9%97%A8/man_man.png" alt="avatar">
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">man man #man （命令名）
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="/post/linux%E5%85%A5%E9%97%A8/man_man.png" alt="avatar">
 上图就是执行该命令的结果,一般会在</p>
 <h4 id="小节名称通常包括">小节名称通常包括</h4>
 <ul>
@@ -477,23 +565,45 @@ x|1|
 <li>[表达式] &hellip;   “<input disabled="" type="checkbox"> ”内的整个 表达式 可以重复。</li>
 </ul>
 <h4 id="man的一般使用方式">man的一般使用方式</h4>
-<pre><code>man ls
-显示 项目 (程序)  ls 对应的手册页
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">man</span> <span class="nx">ls</span>
+<span class="nx">显示</span> <span class="nx">项目</span> <span class="p">(</span><span class="nx">程序</span><span class="p">)</span>  <span class="nx">ls</span> <span class="nx">对应的手册页</span>
 
-man man.7
-Display the manual page for macro package man from section 7.  (This is an alternative
-spelling of &quot;man 7 man&quot;.)
+<span class="nx">man</span> <span class="nx">man</span><span class="mf">.7</span>
+<span class="nx">Display</span> <span class="nx">the</span> <span class="nx">manual</span> <span class="nx">page</span> <span class="k">for</span> <span class="nx">macro</span> <span class="kn">package</span> <span class="nx">man</span> <span class="nx">from</span> <span class="nx">section</span> <span class="mf">7.</span>  <span class="p">(</span><span class="nx">This</span> <span class="nx">is</span> <span class="nx">an</span> <span class="nx">alternative</span>
+<span class="nx">spelling</span> <span class="nx">of</span> <span class="s">&#34;man 7 man&#34;</span><span class="p">.)</span>
 
-man 'man(7)'
-Display the manual page for macro package  man  from  section  7.   (This  is  another alternative  spelling  of  &quot;man  7  man&quot;.   It may be more convenient when copying and pasting cross-references to manual pages.  Note that the parentheses must normally  be quoted to protect them from the shell.)
+<span class="nx">man</span> <span class="err">&#39;</span><span class="nf">man</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="err">&#39;</span>
+<span class="nx">Display</span> <span class="nx">the</span> <span class="nx">manual</span> <span class="nx">page</span> <span class="k">for</span> <span class="nx">macro</span> <span class="kn">package</span>  <span class="nx">man</span>  <span class="nx">from</span>  <span class="nx">section</span>  <span class="mf">7.</span>   <span class="p">(</span><span class="nx">This</span>  <span class="nx">is</span>  <span class="nx">another</span> <span class="nx">alternative</span>  <span class="nx">spelling</span>  <span class="nx">of</span>  <span class="s">&#34;man  7  man&#34;</span><span class="p">.</span>   <span class="nx">It</span> <span class="nx">may</span> <span class="nx">be</span> <span class="nx">more</span> <span class="nx">convenient</span> <span class="nx">when</span> <span class="nx">copying</span> <span class="nx">and</span> <span class="nx">pasting</span> <span class="nx">cross</span><span class="o">-</span><span class="nx">references</span> <span class="nx">to</span> <span class="nx">manual</span> <span class="nx">pages</span><span class="p">.</span>  <span class="nx">Note</span> <span class="nx">that</span> <span class="nx">the</span> <span class="nx">parentheses</span> <span class="nx">must</span> <span class="nx">normally</span>  <span class="nx">be</span> <span class="nx">quoted</span> <span class="nx">to</span> <span class="nx">protect</span> <span class="nx">them</span> <span class="nx">from</span> <span class="nx">the</span> <span class="nx">shell</span><span class="p">.)</span>
 
-man -a intro
-正确执行时显示手册中包含的所有可用的  intro 手册页。可以在连续显示过程中退出或跳过任一
-页。
+<span class="nx">man</span> <span class="o">-</span><span class="nx">a</span> <span class="nx">intro</span>
+<span class="nx">正确执行时显示手册中包含的所有可用的</span>  <span class="nx">intro</span> <span class="nx">手册页</span><span class="err">。</span><span class="nx">可以在连续显示过程中退出或跳过任一</span>
+<span class="nx">页</span><span class="err">。</span>
 
-man -t bash | lpr -Pps
-Format the manual page for bash into the default troff or groff format and pipe it  to the printer named ps.  The default output for groff is usually PostScript.  man --help should advise as to which processor is bound to the -t option.
-</code></pre><h3 id="如果man没有你使用的命令的文档怎么办">如果man没有你使用的命令的文档怎么办</h3>
+<span class="nx">man</span> <span class="o">-</span><span class="nx">t</span> <span class="nx">bash</span> <span class="p">|</span> <span class="nx">lpr</span> <span class="o">-</span><span class="nx">Pps</span>
+<span class="nx">Format</span> <span class="nx">the</span> <span class="nx">manual</span> <span class="nx">page</span> <span class="k">for</span> <span class="nx">bash</span> <span class="nx">into</span> <span class="nx">the</span> <span class="k">default</span> <span class="nx">troff</span> <span class="nx">or</span> <span class="nx">groff</span> <span class="nx">format</span> <span class="nx">and</span> <span class="nx">pipe</span> <span class="nx">it</span>  <span class="nx">to</span> <span class="nx">the</span> <span class="nx">printer</span> <span class="nx">named</span> <span class="nx">ps</span><span class="p">.</span>  <span class="nx">The</span> <span class="k">default</span> <span class="nx">output</span> <span class="k">for</span> <span class="nx">groff</span> <span class="nx">is</span> <span class="nx">usually</span> <span class="nx">PostScript</span><span class="p">.</span>  <span class="nx">man</span> <span class="o">--</span><span class="nx">help</span> <span class="nx">should</span> <span class="nx">advise</span> <span class="nx">as</span> <span class="nx">to</span> <span class="nx">which</span> <span class="nx">processor</span> <span class="nx">is</span> <span class="nx">bound</span> <span class="nx">to</span> <span class="nx">the</span> <span class="o">-</span><span class="nx">t</span> <span class="nx">option</span><span class="p">.</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="如果man没有你使用的命令的文档怎么办">如果man没有你使用的命令的文档怎么办</h3>
 <p>一般的程序都会支持如下几个命令：</p>
 <ul>
 <li>-h 显示帮助（不一定是这个功能）</li>

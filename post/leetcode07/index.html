@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.73.0" />
+<meta name="generator" content="Hugo 0.74.3" />
 
 
 <link rel="canonical" href="https://wuliaotc.github.io/post/leetcode07/" />
@@ -67,13 +67,14 @@
 <meta property="article:modified_time" content="2019-08-09T00:00:00+00:00" />
 <meta itemprop="name" content="Leetcode07">
 <meta itemprop="description" content="7.整数反转 给出一个 32 位的有符号整数，你需要将这个整数中每位上的数字进行反转。 示例 1: 输入: 123 输出: 321 示例 2: 输入: -123 输出: -321 示例 3: 输入: 120 输出">
-<meta itemprop="datePublished" content="2019-08-09T00:00:00&#43;00:00" />
-<meta itemprop="dateModified" content="2019-08-09T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="919">
+<meta itemprop="datePublished" content="2019-08-09T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2019-08-09T00:00:00+00:00" />
+<meta itemprop="wordCount" content="991">
 
 
 
-<meta itemprop="keywords" content="Leetcode,c/c&#43;&#43;," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Leetcode,c/c&#43;&#43;," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Leetcode07"/>
 <meta name="twitter:description" content="7.整数反转 给出一个 32 位的有符号整数，你需要将这个整数中每位上的数字进行反转。 示例 1: 输入: 123 输出: 321 示例 2: 输入: -123 输出: -321 示例 3: 输入: 120 输出"/>
 
@@ -403,82 +404,166 @@
 <h3 id="注意">注意:</h3>
 <h4 id="假设我们的环境只能存储得下-32-位的有符号整数则其数值范围为-231--231--1请根据这个假设如果反转后整数溢出那么就返回-0">假设我们的环境只能存储得下 32 位的有符号整数，则其数值范围为 [−231,  231 − 1]。请根据这个假设，如果反转后整数溢出那么就返回 0。</h4>
 <h4 id="这是我第一次没有看评论写出来的当然没有通过测试">这是我第一次没有看评论写出来的,当然,没有通过测试</h4>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    <span style="color:#75715e">#include</span><span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">reverse</span>(<span style="color:#66d9ef">int</span> x);
-    <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(){
-        printf(<span style="color:#e6db74">&#34;%d&#34;</span>, reverse(<span style="color:#f92672">-</span><span style="color:#ae81ff">2147483648</span>));
-        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-    }
-    <span style="color:#75715e">//-2147483648~2147483647 10位
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">reverse</span>(<span style="color:#66d9ef">int</span> x){
-        <span style="color:#66d9ef">int</span> b[<span style="color:#ae81ff">10</span>] <span style="color:#f92672">=</span> {<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">7</span>}; <span style="color:#75715e">//这是大于0情况的
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">int</span> a[<span style="color:#ae81ff">10</span>] <span style="color:#f92672">=</span> {<span style="color:#ae81ff">0</span>};<span style="color:#75715e">//初始化,不然当x=0是会出现bug
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">int</span> ifPositive <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;<span style="color:#75715e">//这个参数是为了记录该数为正或为负
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">int</span> result <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-        printf(<span style="color:#e6db74">&#34;%d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, x);
-        <span style="color:#66d9ef">if</span> (x <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>){
-            x<span style="color:#f92672">=-</span>x;
-            ifPositive <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-        }
-        printf(<span style="color:#e6db74">&#34;%d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,x);
-        <span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c">    <span class="cp">#include</span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp"></span>    <span class="kt">int</span> <span class="nf">reverse</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%d&#34;</span><span class="p">,</span> <span class="n">reverse</span><span class="p">(</span><span class="o">-</span><span class="mi">2147483648</span><span class="p">));</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">//-2147483648~2147483647 10位
+</span><span class="c1"></span>    <span class="kt">int</span> <span class="nf">reverse</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">){</span>
+        <span class="kt">int</span> <span class="n">b</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">};</span> <span class="c1">//这是大于0情况的
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="c1">//初始化,不然当x=0是会出现bug
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">ifPositive</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span><span class="c1">//这个参数是为了记录该数为正或为负
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">){</span>
+            <span class="n">x</span><span class="o">=-</span><span class="n">x</span><span class="p">;</span>
+            <span class="n">ifPositive</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">x</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
     
-        <span style="color:#66d9ef">while</span> (x){ <span style="color:#75715e">//x不为0
-</span><span style="color:#75715e"></span>            a[i] <span style="color:#f92672">=</span> x <span style="color:#f92672">%</span> <span style="color:#ae81ff">10</span>;
-            x <span style="color:#f92672">/=</span> <span style="color:#ae81ff">10</span>;
-            i<span style="color:#f92672">++</span>;
-        } <span style="color:#75715e">//出来后i的最大值为10
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (i <span style="color:#f92672">==</span> <span style="color:#ae81ff">10</span>){ <span style="color:#75715e">//不要判断溢出
-</span><span style="color:#75715e"></span>            printf(<span style="color:#e6db74">&#34;判断溢出</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-            <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> j<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;j<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">10</span>;j<span style="color:#f92672">++</span>)
-                printf(<span style="color:#e6db74">&#34;a[%d]:%d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,j,a[j]);
-            <span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-            <span style="color:#66d9ef">for</span> (; j <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">9</span>; j<span style="color:#f92672">++</span>){ <span style="color:#75715e">//比较除个位以外的数
-</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">if</span> (a[j] <span style="color:#f92672">==</span> b[j]){ <span style="color:#75715e">//相同,继续循环判断
-</span><span style="color:#75715e"></span>                    printf(<span style="color:#e6db74">&#34;continue:%d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,j);
-                    <span style="color:#66d9ef">continue</span>;
-                }
-                <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (a[j] <span style="color:#f92672">&gt;</span> b[j]){ <span style="color:#75715e">//异常 返回
-</span><span style="color:#75715e"></span>                    printf(<span style="color:#e6db74">&#34;return:%d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, j);
-                     <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-                }
-                <span style="color:#66d9ef">else</span>{ <span style="color:#75715e">//出现一次即代表 可以跳出循环
-</span><span style="color:#75715e"></span>                    printf(<span style="color:#e6db74">&#34;break:%d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, j);
-                     <span style="color:#66d9ef">break</span>;
-                }
-            }
-            <span style="color:#66d9ef">if</span> (j <span style="color:#f92672">==</span> <span style="color:#ae81ff">9</span>){ <span style="color:#75715e">//继续判断
-</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">if</span> (a[<span style="color:#ae81ff">9</span>] <span style="color:#f92672">&gt;</span> b[<span style="color:#ae81ff">9</span>] <span style="color:#f92672">-</span> ifPositive){
-                    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-                }
-            }
-        }
+        <span class="k">while</span> <span class="p">(</span><span class="n">x</span><span class="p">){</span> <span class="c1">//x不为0
+</span><span class="c1"></span>            <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">10</span><span class="p">;</span>
+            <span class="n">x</span> <span class="o">/=</span> <span class="mi">10</span><span class="p">;</span>
+            <span class="n">i</span><span class="o">++</span><span class="p">;</span>
+        <span class="p">}</span> <span class="c1">//出来后i的最大值为10
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">10</span><span class="p">){</span> <span class="c1">//不要判断溢出
+</span><span class="c1"></span>            <span class="n">printf</span><span class="p">(</span><span class="s">&#34;判断溢出</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+            <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
+                <span class="n">printf</span><span class="p">(</span><span class="s">&#34;a[%d]:%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span>
+            <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="k">for</span> <span class="p">(;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">9</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">){</span> <span class="c1">//比较除个位以外的数
+</span><span class="c1"></span>                <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span><span class="p">[</span><span class="n">j</span><span class="p">]){</span> <span class="c1">//相同,继续循环判断
+</span><span class="c1"></span>                    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;continue:%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">j</span><span class="p">);</span>
+                    <span class="k">continue</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">[</span><span class="n">j</span><span class="p">]){</span> <span class="c1">//异常 返回
+</span><span class="c1"></span>                    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;return:%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
+                     <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">else</span><span class="p">{</span> <span class="c1">//出现一次即代表 可以跳出循环
+</span><span class="c1"></span>                    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;break:%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">j</span><span class="p">);</span>
+                     <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">j</span> <span class="o">==</span> <span class="mi">9</span><span class="p">){</span> <span class="c1">//继续判断
+</span><span class="c1"></span>                <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">-</span> <span class="n">ifPositive</span><span class="p">){</span>
+                    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
     
-        result <span style="color:#f92672">=</span> a[<span style="color:#ae81ff">0</span>];
-        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; j <span style="color:#f92672">&lt;</span> i; j<span style="color:#f92672">++</span>)
-        {
-            result <span style="color:#f92672">*=</span> <span style="color:#ae81ff">10</span>;
-            result <span style="color:#f92672">+=</span> a[j];
-        }
+        <span class="n">result</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">i</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">result</span> <span class="o">*=</span> <span class="mi">10</span><span class="p">;</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="n">a</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+        <span class="p">}</span>
     
-        <span style="color:#66d9ef">return</span> ifPositive <span style="color:#f92672">?</span> result : <span style="color:#f92672">-</span>result;
-    }
-</code></pre></div><h4 id="在调试过程中我发现测试内容有一个为x-2147483648终于知道了为什么无法通过测试当为32位int时-2147483648转为正数也会因为溢出变为2147483647正向最大1-2147483648但是我也不知道这应该怎么解决有大佬啊知道的话请带带我">在调试过程中我发现测试内容有一个为x=-2147483648,终于知道了为什么无法通过测试,当为32位int时,-2147483648转为正数也会因为溢出变为2147483647(正向最大)+1=-2147483648,但是我也不知道这应该怎么解决,有大佬啊知道的话请带带我</h4>
+        <span class="k">return</span> <span class="n">ifPositive</span> <span class="o">?</span> <span class="nl">result</span> <span class="p">:</span> <span class="o">-</span><span class="n">result</span><span class="p">;</span>
+    <span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="在调试过程中我发现测试内容有一个为x-2147483648终于知道了为什么无法通过测试当为32位int时-2147483648转为正数也会因为溢出变为2147483647正向最大1-2147483648但是我也不知道这应该怎么解决有大佬啊知道的话请带带我">在调试过程中我发现测试内容有一个为x=-2147483648,终于知道了为什么无法通过测试,当为32位int时,-2147483648转为正数也会因为溢出变为2147483647(正向最大)+1=-2147483648,但是我也不知道这应该怎么解决,有大佬啊知道的话请带带我</h4>
 <h4 id="看了官方的解法我感觉我还是太菜了">看了官方的解法我感觉我还是太菜了</h4>
 <h5 id="手动转下c语言">手动转下c语言</h5>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">reverse</span>(<span style="color:#66d9ef">int</span> x) {
-        <span style="color:#66d9ef">int</span> rev <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-        <span style="color:#66d9ef">while</span> (x <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>) {
-            <span style="color:#66d9ef">int</span> pop <span style="color:#f92672">=</span> x <span style="color:#f92672">%</span> <span style="color:#ae81ff">10</span>;<span style="color:#75715e">//没啥好说的
-</span><span style="color:#75715e"></span>            x <span style="color:#f92672">/=</span> <span style="color:#ae81ff">10</span>;<span style="color:#75715e">//没啥好说的
-</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> (rev <span style="color:#f92672">&gt;</span> INT_MAX<span style="color:#f92672">/</span><span style="color:#ae81ff">10</span> <span style="color:#f92672">||</span> (rev <span style="color:#f92672">==</span> INT_MAX <span style="color:#f92672">/</span> <span style="color:#ae81ff">10</span> <span style="color:#f92672">&amp;&amp;</span> pop <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">7</span>)) <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-            <span style="color:#66d9ef">if</span> (rev <span style="color:#f92672">&lt;</span> INT_MIN<span style="color:#f92672">/</span><span style="color:#ae81ff">10</span> <span style="color:#f92672">||</span> (rev <span style="color:#f92672">==</span> INT_MIN <span style="color:#f92672">/</span> <span style="color:#ae81ff">10</span> <span style="color:#f92672">&amp;&amp;</span> pop <span style="color:#f92672">&lt;</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">8</span>)) <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;<span style="color:#75715e">//这里这个pop判断很有灵性.
-</span><span style="color:#75715e"></span>            rev <span style="color:#f92672">=</span> rev <span style="color:#f92672">*</span> <span style="color:#ae81ff">10</span> <span style="color:#f92672">+</span> pop;
-        }
-        <span style="color:#66d9ef">return</span> rev;
-    }
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c">    <span class="kt">int</span> <span class="nf">reverse</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">rev</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">x</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kt">int</span> <span class="n">pop</span> <span class="o">=</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">10</span><span class="p">;</span><span class="c1">//没啥好说的
+</span><span class="c1"></span>            <span class="n">x</span> <span class="o">/=</span> <span class="mi">10</span><span class="p">;</span><span class="c1">//没啥好说的
+</span><span class="c1"></span>            <span class="k">if</span> <span class="p">(</span><span class="n">rev</span> <span class="o">&gt;</span> <span class="n">INT_MAX</span><span class="o">/</span><span class="mi">10</span> <span class="o">||</span> <span class="p">(</span><span class="n">rev</span> <span class="o">==</span> <span class="n">INT_MAX</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">&amp;&amp;</span> <span class="n">pop</span> <span class="o">&gt;</span> <span class="mi">7</span><span class="p">))</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">rev</span> <span class="o">&lt;</span> <span class="n">INT_MIN</span><span class="o">/</span><span class="mi">10</span> <span class="o">||</span> <span class="p">(</span><span class="n">rev</span> <span class="o">==</span> <span class="n">INT_MIN</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">&amp;&amp;</span> <span class="n">pop</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">8</span><span class="p">))</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span><span class="c1">//这里这个pop判断很有灵性.
+</span><span class="c1"></span>            <span class="n">rev</span> <span class="o">=</span> <span class="n">rev</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="n">pop</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">rev</span><span class="p">;</span>
+    <span class="p">}</span>
 
-</code></pre></div><h4 id="复习一下c语言负数取余的知识">复习一下c语言负数取余的知识</h4>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="复习一下c语言负数取余的知识">复习一下c语言负数取余的知识</h4>
 <h5 id="嗯-比如-73-1-就是--733-1">嗯 比如-7%3=-1 就是 <em>-7+3+3=-1</em></h5>
 <h4 id="然后写一句提醒自己这不是汇编把数字拆分成数组并不会提升速度我也不太清楚反正这样写很麻烦大概性能提升也不明显可我就是个强迫症反正下次不这样写了">然后写一句提醒自己,这不是汇编,把数字拆分成数组并不会提升速度(我也不太清楚,反正这样写很麻烦,大概性能提升也不明显),可我就是个强迫症&hellip;&hellip;,反正下次不这样写了</h4>
 <h4 id="嘛-感觉官方这个算法很神秘我可能一时半会想不出来时间复杂度是ologx-空间复杂度是o1">嘛 感觉官方这个算法很神秘,我可能一时半会想不出来,时间复杂度是O(log(x)) 空间复杂度是O(1)</h4>

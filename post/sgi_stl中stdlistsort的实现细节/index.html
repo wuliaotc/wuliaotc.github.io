@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.73.0" />
+<meta name="generator" content="Hugo 0.74.3" />
 
 
 <link rel="canonical" href="https://wuliaotc.github.io/post/sgi_stl%E4%B8%ADstdlistsort%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82/" />
@@ -66,13 +66,14 @@
 <meta property="article:modified_time" content="2019-09-01T21:57:49+08:00" />
 <meta itemprop="name" content="SGI_STL中std::list::sort的实现细节">
 <meta itemprop="description" content="SGI_STL中std::list::sort的实现细节">
-<meta itemprop="datePublished" content="2019-09-01T21:57:49&#43;08:00" />
-<meta itemprop="dateModified" content="2019-09-01T21:57:49&#43;08:00" />
-<meta itemprop="wordCount" content="919">
+<meta itemprop="datePublished" content="2019-09-01T21:57:49+08:00" />
+<meta itemprop="dateModified" content="2019-09-01T21:57:49+08:00" />
+<meta itemprop="wordCount" content="965">
 
 
 
-<meta itemprop="keywords" content="c&#43;&#43;,STL,算法," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="c&#43;&#43;,STL,算法," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="SGI_STL中std::list::sort的实现细节"/>
 <meta name="twitter:description" content="SGI_STL中std::list::sort的实现细节"/>
 
@@ -361,53 +362,105 @@
       <h3 id="最近在看侯捷老师的stl源码剖析从中收获了很多书中并没有解释listsort的每步的目的和具体分析我决定写一篇文章记录一下有关序列式容器list的sort算法的实现细节">最近在看侯捷老师的&laquo;STL源码剖析&raquo;，从中收获了很多。书中并没有解释list::sort的每步的目的，和具体分析，我决定写一篇文章记录一下有关序列式容器list的sort算法的实现细节。</h3>
 <h3 id="有一个要注意的地方书中认为sort是quick-sort-即快速排序算法实际上是错的应该是merge-归并排序算法">有一个要注意的地方，书中认为sort是quick sort 即快速排序算法，实际上是错的，应该是merge 归并排序算法。</h3>
 <h3 id="下面摆一下源码并注释一下我的理解">下面摆一下源码，并注释一下我的理解。</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">T</span>,<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Alloc</span><span style="color:#f92672">&gt;</span>
-<span style="color:#66d9ef">void</span> list<span style="color:#f92672">&lt;</span>T, Alloc<span style="color:#f92672">&gt;::</span>sort()
-{
-    <span style="color:#75715e">//以下是书中自带的注释
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//以下判断，如果是空链表，或仅有一个元素,就不进行任何操作
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//使用 size() == 0 || size() == 1 来判断,虽然也可以,但是比较慢
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//以上是书中自带的注释
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//SGI STL中 list 是使用双向环链表实现的，其中链表的尾部是一个空节点，即head-&gt;pre是一个空节点，指向尾部。
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span>(node<span style="color:#f92672">-&gt;</span>next <span style="color:#f92672">==</span> node <span style="color:#f92672">||</span> sink_type(node<span style="color:#f92672">-&gt;</span>next)<span style="color:#f92672">-&gt;</span>next <span style="color:#f92672">==</span> node)
-        <span style="color:#66d9ef">return</span>;
-    <span style="color:#75715e">//以下是书中自带的注释
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//一些新的lists，作为中介数据的存放区
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//以上是书中自带的注释
-</span><span style="color:#75715e"></span>    list<span style="color:#f92672">&lt;</span>T, Alloc<span style="color:#f92672">&gt;</span> carry;
-    list<span style="color:#f92672">&lt;</span>T, Alloc<span style="color:#f92672">&gt;</span> counter[<span style="color:#ae81ff">64</span>];
-    <span style="color:#66d9ef">int</span> fill <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-    <span style="color:#75715e">//在下列循环中,每次最后都将全部数据合并到counter[fill]，然后执行++fill
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">/*
-</span><span style="color:#75715e">        外层循环每次循环从list头部取出一个节点放入carry中，
-</span><span style="color:#75715e">            内层循环每次循环将carry合并入counter[i]后放回carry，能够保证清空counter[i]，然后++i
-</span><span style="color:#75715e">        外层循环能够保证每次执行完carry都会被清空，内容放入counter[fill]
-</span><span style="color:#75715e">    */</span>
-    <span style="color:#66d9ef">while</span>(<span style="color:#f92672">!</span>empty())
-    {
-        <span style="color:#75715e">//将链表中的begin()插入到carry.begin()的位置
-</span><span style="color:#75715e"></span>        carry.splice(carry.begin(), <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>, begin)<span style="color:#75715e">//常数级操作
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;<span style="color:#75715e">//常数级操作
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">//要求是i&lt;fill 并且counter[i]不能为空，保证有数据可以取出
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">while</span>(i <span style="color:#f92672">&lt;</span> fill <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span>counter[i].empty())
-        {
-            counter[i].merge(carry);<span style="color:#75715e">//m+n次操作
-</span><span style="color:#75715e"></span>            carry.swap(counter[i<span style="color:#f92672">++</span>]);<span style="color:#75715e">//常量级
-</span><span style="color:#75715e"></span>        }
-        <span style="color:#75715e">//清空carry
-</span><span style="color:#75715e"></span>        carry.swap(counter[i]);<span style="color:#75715e">//常量级
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (i <span style="color:#f92672">==</span> fill) <span style="color:#f92672">++</span>fill;<span style="color:#75715e">//常量级 i==fill 这个判断是为因 ！counter[i].empty(),即出现counter[i]为空的情况下准备的
-</span><span style="color:#75715e"></span>    }
-    <span style="color:#75715e">//因为在merge过程中，list会为空，因此
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i<span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>;i <span style="color:#f92672">&lt;</span> fill; i<span style="color:#f92672">++</span>)
-        counter[i].merge(counter[i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]);
-    swap(counter[fill<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>];)
-}
-</code></pre></div><h3 id="在上述算法中-counterfill可以储存-2fill-1-个节点也就是list的最大容量为-264-1">在上述算法中 counter[fill]可以储存 2^fill-1 个节点，也就是list的最大容量为 2^64-1</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c++" data-lang="c++"><span class="k">template</span> <span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="p">,</span><span class="k">class</span> <span class="nc">Alloc</span><span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">list</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">Alloc</span><span class="o">&gt;::</span><span class="n">sort</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">//以下是书中自带的注释
+</span><span class="c1"></span>    <span class="c1">//
+</span><span class="c1"></span>    <span class="c1">//以下判断，如果是空链表，或仅有一个元素,就不进行任何操作
+</span><span class="c1"></span>    <span class="c1">//使用 size() == 0 || size() == 1 来判断,虽然也可以,但是比较慢
+</span><span class="c1"></span>    <span class="c1">//
+</span><span class="c1"></span>    <span class="c1">//以上是书中自带的注释
+</span><span class="c1"></span>    <span class="c1">//SGI STL中 list 是使用双向环链表实现的，其中链表的尾部是一个空节点，即head-&gt;pre是一个空节点，指向尾部。
+</span><span class="c1"></span>    <span class="k">if</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">==</span> <span class="n">node</span> <span class="o">||</span> <span class="n">sink_type</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">==</span> <span class="n">node</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="c1">//以下是书中自带的注释
+</span><span class="c1"></span>    <span class="c1">//
+</span><span class="c1"></span>    <span class="c1">//一些新的lists，作为中介数据的存放区
+</span><span class="c1"></span>    <span class="c1">//
+</span><span class="c1"></span>    <span class="c1">//以上是书中自带的注释
+</span><span class="c1"></span>    <span class="n">list</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">Alloc</span><span class="o">&gt;</span> <span class="n">carry</span><span class="p">;</span>
+    <span class="n">list</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="n">Alloc</span><span class="o">&gt;</span> <span class="n">counter</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+    <span class="kt">int</span> <span class="n">fill</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="c1">//在下列循环中,每次最后都将全部数据合并到counter[fill]，然后执行++fill
+</span><span class="c1"></span>    <span class="cm">/*
+</span><span class="cm">        外层循环每次循环从list头部取出一个节点放入carry中，
+</span><span class="cm">            内层循环每次循环将carry合并入counter[i]后放回carry，能够保证清空counter[i]，然后++i
+</span><span class="cm">        外层循环能够保证每次执行完carry都会被清空，内容放入counter[fill]
+</span><span class="cm">    */</span>
+    <span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="n">empty</span><span class="p">())</span>
+    <span class="p">{</span>
+        <span class="c1">//将链表中的begin()插入到carry.begin()的位置
+</span><span class="c1"></span>        <span class="n">carry</span><span class="p">.</span><span class="n">splice</span><span class="p">(</span><span class="n">carry</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="o">*</span><span class="k">this</span><span class="p">,</span> <span class="n">begin</span><span class="p">)</span><span class="c1">//常数级操作
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="c1">//常数级操作
+</span><span class="c1"></span>        <span class="c1">//要求是i&lt;fill 并且counter[i]不能为空，保证有数据可以取出
+</span><span class="c1"></span>        <span class="k">while</span><span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">fill</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">counter</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">empty</span><span class="p">())</span>
+        <span class="p">{</span>
+            <span class="n">counter</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">merge</span><span class="p">(</span><span class="n">carry</span><span class="p">);</span><span class="c1">//m+n次操作
+</span><span class="c1"></span>            <span class="n">carry</span><span class="p">.</span><span class="n">swap</span><span class="p">(</span><span class="n">counter</span><span class="p">[</span><span class="n">i</span><span class="o">++</span><span class="p">]);</span><span class="c1">//常量级
+</span><span class="c1"></span>        <span class="p">}</span>
+        <span class="c1">//清空carry
+</span><span class="c1"></span>        <span class="n">carry</span><span class="p">.</span><span class="n">swap</span><span class="p">(</span><span class="n">counter</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span><span class="c1">//常量级
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">fill</span><span class="p">)</span> <span class="o">++</span><span class="n">fill</span><span class="p">;</span><span class="c1">//常量级 i==fill 这个判断是为因 ！counter[i].empty(),即出现counter[i]为空的情况下准备的
+</span><span class="c1"></span>    <span class="p">}</span>
+    <span class="c1">//因为在merge过程中，list会为空，因此
+</span><span class="c1"></span>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">==</span> <span class="mi">1</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">fill</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="n">counter</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">merge</span><span class="p">(</span><span class="n">counter</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]);</span>
+    <span class="n">swap</span><span class="p">(</span><span class="n">counter</span><span class="p">[</span><span class="n">fill</span><span class="o">-</span><span class="mi">1</span><span class="p">];)</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="在上述算法中-counterfill可以储存-2fill-1-个节点也就是list的最大容量为-264-1">在上述算法中 counter[fill]可以储存 2^fill-1 个节点，也就是list的最大容量为 2^64-1</h3>
 
     </div>
 

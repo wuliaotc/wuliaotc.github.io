@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.73.0" />
+<meta name="generator" content="Hugo 0.74.3" />
 
 
 <link rel="canonical" href="https://wuliaotc.github.io/post/dim-sum/%E5%9C%A8archlinux%E4%B8%8A%E8%BF%90%E8%A1%8Cdim-sum/" />
@@ -67,13 +67,14 @@
 <meta property="article:modified_time" content="2020-07-28T20:56:10+08:00" />
 <meta itemprop="name" content="在archlinux上运行dim Sum">
 <meta itemprop="description" content="前几天正好看见一本新书出来了,叫做《自研操作系统：DIM-SUM的设计与实现》。作者是一位工作二十多年的行业大牛，我平时也对操作系统十分感兴">
-<meta itemprop="datePublished" content="2020-07-28T20:56:10&#43;08:00" />
-<meta itemprop="dateModified" content="2020-07-28T20:56:10&#43;08:00" />
-<meta itemprop="wordCount" content="697">
+<meta itemprop="datePublished" content="2020-07-28T20:56:10+08:00" />
+<meta itemprop="dateModified" content="2020-07-28T20:56:10+08:00" />
+<meta itemprop="wordCount" content="733">
 
 
 
-<meta itemprop="keywords" content="archlinux," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="archlinux," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="在archlinux上运行dim Sum"/>
 <meta name="twitter:description" content="前几天正好看见一本新书出来了,叫做《自研操作系统：DIM-SUM的设计与实现》。作者是一位工作二十多年的行业大牛，我平时也对操作系统十分感兴"/>
 
@@ -367,8 +368,15 @@
 我平时用的比较多的是archlinux,因此我将在archlinux下部署环境。
 首先是前置准备工作：
 首先qemu相关组件需要安装。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># pacman -S qemu qemu-arch-extra</span> 
-</code></pre></div><p>dim-sum使用了virtio系列的驱动来进行硬件的虚拟化，virtio有关内容见archwiki ​<a href="https://wiki.archlinux.org/index.php/QEMU">qemu</a>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># pacman -S qemu qemu-arch-extra</span> 
+</code></pre></td></tr></table>
+</div>
+</div><p>dim-sum使用了virtio系列的驱动来进行硬件的虚拟化，virtio有关内容见archwiki ​<a href="https://wiki.archlinux.org/index.php/QEMU">qemu</a>
 先说说我踩的坑，我遇到的问题是网络相关问题，有个叫/etc/qemu-if的脚本报错 256 status code。
 经过一段时间的摸索和阅读archwiki,我找到了解决方案。</p>
 <ul>
@@ -377,49 +385,126 @@
 <li>加载 tun 内核模块创建一个网桥br0</li>
 <li>最后创建脚本后修改用户和权限就ok了</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">    <span style="color:#75715e"># pacman -S bridge-utils</span>
-    <span style="color:#75715e"># sysctl net.ipv4.ip_forward=1</span>
-    <span style="color:#75715e"># modprobe -a tun</span>
-    <span style="color:#75715e"># ip link add name br0 type bridge</span>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">    <span class="c1"># pacman -S bridge-utils</span>
+    <span class="c1"># sysctl net.ipv4.ip_forward=1</span>
+    <span class="c1"># modprobe -a tun</span>
+    <span class="c1"># ip link add name br0 type bridge</span>
     # 
-</code></pre></div><p>下面是创建的脚本和内容：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">/etc/qemu-ifup
+</code></pre></td></tr></table>
+</div>
+</div><p>下面是创建的脚本和内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">/etc/qemu-ifup
 
-<span style="color:#75715e">#!/bin/sh</span>
+<span class="c1">#!/bin/sh</span>
 
-echo <span style="color:#e6db74">&#34;Executing /etc/qemu-ifup&#34;</span>
-echo <span style="color:#e6db74">&#34;Bringing up </span>$1<span style="color:#e6db74"> for bridged mode...&#34;</span>
-sudo /usr/bin/ip link set $1 up promisc on
-echo <span style="color:#e6db74">&#34;Adding </span>$1<span style="color:#e6db74"> to br0...&#34;</span>
-sudo /usr/bin/brctl addif br0 $1
-sleep <span style="color:#ae81ff">2</span>
+<span class="nb">echo</span> <span class="s2">&#34;Executing /etc/qemu-ifup&#34;</span>
+<span class="nb">echo</span> <span class="s2">&#34;Bringing up </span><span class="nv">$1</span><span class="s2"> for bridged mode...&#34;</span>
+sudo /usr/bin/ip link <span class="nb">set</span> <span class="nv">$1</span> up promisc on
+<span class="nb">echo</span> <span class="s2">&#34;Adding </span><span class="nv">$1</span><span class="s2"> to br0...&#34;</span>
+sudo /usr/bin/brctl addif br0 <span class="nv">$1</span>
+sleep <span class="m">2</span>
 
 
 /etc/qemu-ifdown
 
-<span style="color:#75715e">#!/bin/sh</span>
+<span class="c1">#!/bin/sh</span>
 
-echo <span style="color:#e6db74">&#34;Executing /etc/qemu-ifdown&#34;</span>
-sudo /usr/bin/ip link set $1 down
-sudo /usr/bin/brctl delif br0 $1
-sudo /usr/bin/ip link delete dev $1
+<span class="nb">echo</span> <span class="s2">&#34;Executing /etc/qemu-ifdown&#34;</span>
+sudo /usr/bin/ip link <span class="nb">set</span> <span class="nv">$1</span> down
+sudo /usr/bin/brctl delif br0 <span class="nv">$1</span>
+sudo /usr/bin/ip link delete dev <span class="nv">$1</span>
 
-</code></pre></div><p>最后修改权限和用户组</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"><span style="color:#75715e"># chmod 750 /etc/qemu-ifup</span>
-<span style="color:#75715e"># chmod 750 /etc/qemu-ifdown</span>
-<span style="color:#75715e"># chown root:kvm /etc/qemu-ifup</span>
-<span style="color:#75715e"># chown root:kvm /etc/qemu-ifdown</span>
-</code></pre></div><p>使用visudo加入如下内容：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">Cmnd_Alias      QEMU<span style="color:#f92672">=</span>/usr/bin/ip,/usr/bin/modprobe,/usr/bin/brctl
-%kvm     ALL<span style="color:#f92672">=</span>NOPASSWD: QEMU
-</code></pre></div><p>后面就是拉源码然后编译运行了。</p>
+</code></pre></td></tr></table>
+</div>
+</div><p>最后修改权限和用户组</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># chmod 750 /etc/qemu-ifup</span>
+<span class="c1"># chmod 750 /etc/qemu-ifdown</span>
+<span class="c1"># chown root:kvm /etc/qemu-ifup</span>
+<span class="c1"># chown root:kvm /etc/qemu-ifdown</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>使用visudo加入如下内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">Cmnd_Alias      <span class="nv">QEMU</span><span class="o">=</span>/usr/bin/ip,/usr/bin/modprobe,/usr/bin/brctl
+%kvm     <span class="nv">ALL</span><span class="o">=</span>NOPASSWD: QEMU
+</code></pre></td></tr></table>
+</div>
+</div><p>后面就是拉源码然后编译运行了。</p>
 <p>这里我们可以使用gcc10而不是附带的编译器进行编译</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell"> <span style="color:#75715e"># pacman -S aarch64-linux-gnu-gcc aarch64-linux-gnu-gdb</span>
-</code></pre></div><p>修改Makefile kernel 部分,像这样:</p>
-<pre><code>CROSS_COMPILE=aarch64-linux-gnu- Image dtbs
-</code></pre><p>最后gcc10会有两个位置编译报错,类似这样(把他注释掉):</p>
-<pre><code>#include gcc_header(__GNUC__)
-</code></pre><p>最后编译,享受!</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"> <span class="c1"># pacman -S aarch64-linux-gnu-gcc aarch64-linux-gnu-gdb</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>修改Makefile kernel 部分,像这样:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">CROSS_COMPILE=aarch64-linux-gnu- Image dtbs
+</code></pre></td></tr></table>
+</div>
+</div><p>最后gcc10会有两个位置编译报错,类似这样(把他注释掉):</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">#include gcc_header(__GNUC__)
+</code></pre></td></tr></table>
+</div>
+</div><p>最后编译,享受!</p>
 
     </div>
 
