@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>遍历二叉树 - wuliaotc 的博客</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="wuliaotc" />
+  <meta name="description" content="" />
+
+  <meta name="keywords" content="c/c&#43;&#43;, python, linux, life" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.5" />
+
+
+<link rel="canonical" href="https://wuliaotc.github.io/post/%E7%AE%97%E6%B3%95/%E9%81%8D%E5%8E%86%E4%BA%8C%E5%8F%89%E6%A0%91/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.f1e506a781bf25d33ffc18aa6b4e972a965c58049d27d4f92b7db2e9bf28e4bf.css" integrity="sha256-8eUGp4G/JdM//Biqa06XKpZcWASdJ9T5K32y6b8o5L8=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="遍历二叉树" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://wuliaotc.github.io/post/%E7%AE%97%E6%B3%95/%E9%81%8D%E5%8E%86%E4%BA%8C%E5%8F%89%E6%A0%91/" />
+<meta property="article:published_time" content="2019-08-17T16:13:34+08:00" />
+<meta property="article:modified_time" content="2019-08-17T16:13:34+08:00" />
+<meta itemprop="name" content="遍历二叉树">
+<meta itemprop="description" content="">
+<meta itemprop="datePublished" content="2019-08-17T16:13:34+08:00" />
+<meta itemprop="dateModified" content="2019-08-17T16:13:34+08:00" />
+<meta itemprop="wordCount" content="2023">
+
+
+
+<meta itemprop="keywords" content="c/c&#43;&#43;,数据结构与算法," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="遍历二叉树"/>
+<meta name="twitter:description" content=""/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'G-EW5Y0HCKLT', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">wuliaotc</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/">首页</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/post/">文章</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/tags/">标签</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/about/">About</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://gohugo.io" rel="noopener" target="_blank">
+              hugo
+              
+              <i class="iconfont">
+                <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M623.36 272.96 473.216 423.04C467.2 429.056 467.072 438.656 472.896 444.416c0 0-6.72-6.656 1.6 1.6C496.064 467.648 528.64 500.224 528.64 500.224 534.464 506.048 544 505.856 550.016 499.904l150.08-150.144 67.328 66.432c9.024 8.96 27.456 4.544 30.4-8.96 19.968-92.608 46.656-227.52 46.656-227.52 6.848-34.496-16.192-56.704-49.92-49.92 0 0-134.656 26.816-227.328 46.784C560.32 178.048 556.352 182.272 554.752 187.136c-3.2 6.208-3.008 14.208 3.776 20.992L623.36 272.96z"></path>
+  <path d="M841.152 457.152c-30.528 0-54.784 24.512-54.784 54.656l0 274.752L237.696 786.56 237.696 237.696l206.016 0c6.656 0 10.752 0 13.248 0C487.68 237.696 512 213.184 512 182.848 512 152.32 487.36 128 456.96 128L183.04 128C153.216 128 128 152.576 128 182.848c0 3.136 0.256 6.272 0.768 9.28C128.256 195.136 128 198.272 128 201.408l0 639.488c0 0.064 0 0.192 0 0.256 0 0.128 0 0.192 0 0.32 0 30.528 24.512 54.784 54.784 54.784l646.976 0c6.592 0 9.728 0 11.712 0 28.736 0 52.928-22.976 54.464-51.968C896 843.264 896 842.304 896 841.344l0-20.352L896 561.408 896 512.128C896 481.792 871.424 457.152 841.152 457.152z"></path>
+</svg>
+
+              </i>
+            </a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      wuliaotc
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/">首页</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/post/">文章</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/tags/">标签</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://wuliaotc.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://gohugo.io" rel="noopener" target="_blank">
+              hugo
+              
+              <i class="iconfont">
+                <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M623.36 272.96 473.216 423.04C467.2 429.056 467.072 438.656 472.896 444.416c0 0-6.72-6.656 1.6 1.6C496.064 467.648 528.64 500.224 528.64 500.224 534.464 506.048 544 505.856 550.016 499.904l150.08-150.144 67.328 66.432c9.024 8.96 27.456 4.544 30.4-8.96 19.968-92.608 46.656-227.52 46.656-227.52 6.848-34.496-16.192-56.704-49.92-49.92 0 0-134.656 26.816-227.328 46.784C560.32 178.048 556.352 182.272 554.752 187.136c-3.2 6.208-3.008 14.208 3.776 20.992L623.36 272.96z"></path>
+  <path d="M841.152 457.152c-30.528 0-54.784 24.512-54.784 54.656l0 274.752L237.696 786.56 237.696 237.696l206.016 0c6.656 0 10.752 0 13.248 0C487.68 237.696 512 213.184 512 182.848 512 152.32 487.36 128 456.96 128L183.04 128C153.216 128 128 152.576 128 182.848c0 3.136 0.256 6.272 0.768 9.28C128.256 195.136 128 198.272 128 201.408l0 639.488c0 0.064 0 0.192 0 0.256 0 0.128 0 0.192 0 0.32 0 30.528 24.512 54.784 54.784 54.784l646.976 0c6.592 0 9.728 0 11.712 0 28.736 0 52.928-22.976 54.464-51.968C896 843.264 896 842.304 896 841.344l0-20.352L896 561.408 896 512.128C896 481.792 871.424 457.152 841.152 457.152z"></path>
+</svg>
+
+              </i>
+            </a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">遍历二叉树</h1>
+      
+      <div class="post-meta">
+        <time datetime="2019-08-17" class="post-time">
+          2019-08-17
+        </time>
+        <div class="post-category">
+            <a href="https://wuliaotc.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"> 数据结构与算法 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2023 字 </span>
+          <span class="more-meta"> 预计阅读 5 分钟 </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    <div class="post-content">
+      <h3 id="今年暑假准备复习一下数据结构与算法">今年暑假准备复习一下数据结构与算法</h3>
+<h2 id="今天看到二叉树这一节发现自己对二叉树的遍历的非递归方法还没有掌握因此写个博客记录一下">今天看到二叉树这一节,发现自己对二叉树的遍历的非递归方法还没有掌握,因此写个博客记录一下</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">node</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">value</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">node</span> <span class="o">*</span> <span class="n">left</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">node</span> <span class="o">*</span> <span class="n">right</span><span class="p">;</span>
+<span class="p">}</span> <span class="o">*</span><span class="n">Binarytree</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="首先先摆递归版本">首先先摆递归版本</h2>
+<h3 id="前序遍历">前序遍历</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">r_pre_traverse</span><span class="p">(</span><span class="n">Binarytree</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">!=</span><span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">value</span><span class="p">);</span>
+        <span class="n">pre_traverse</span><span class="p">(</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">);</span>
+        <span class="n">pre_traverse</span><span class="p">(</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="其他递归遍历方法只是换了个位置而已就不放在这里占位置了">其他递归遍历方法只是换了个位置而已,就不放在这里占位置了</h3>
+<h2 id="非递归循环版本">非递归循环版本</h2>
+<h3 id="中序遍历中序遍历比较简单先写这个">中序遍历(中序遍历比较简单先写这个)</h3>
+<h4 id="首先我们来分析一下主要操作">首先我们来分析一下主要操作</h4>
+<ol>
+<li>寻找左子树,将当前节点压入栈,直到左子树为空</li>
+<li>从栈中弹出来一个节点,访问他的值(出栈即代表访问),然后切换到他的右子树,将右子树压入栈</li>
+</ol>
+<h4 id="循环结束的情况分析">循环结束的情况分析</h4>
+<ul>
+<li>节点为空,栈为空
+<ol>
+<li>结束循环</li>
+</ol>
+</li>
+<li>节点不为空,栈为空
+<ol>
+<li>刚刚开始执行,函数还未进入循环体时</li>
+<li>在循环过程中,栈为空即代表当前节点没有父节点,所以此时执行到根节点,正准备切换到根节点的右子树</li>
+<li>也有可能在循环体的访问最后一个右节点时出现</li>
+</ol>
+</li>
+<li>节点为空,栈不为空
+<ol>
+<li>栈不为空代表有父节点,节点为空,说明该节点为<code>st.top()</code>的右子树</li>
+</ol>
+</li>
+<li>节点不为空,栈不为空
+<ul>
+<li>这个没什么好说的</li>
+</ul>
+</li>
+</ul>
+<h4 id="总体的流程大概是">总体的流程大概是</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">while(b!=nullptr||!st.empty()){//右子树为空且栈空时结束
+    while(b!=nullptr){//直到左子树为空
+        执行1;
+    }
+    if(!st.empty()){
+        执行2;
+    }
+    
+}
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="丢代码">丢代码</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c++" data-lang="c++"><span class="kt">void</span> <span class="nf">inoder_traverse</span><span class="p">(</span><span class="n">Binarytree</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">==</span><span class="k">nullptr</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="n">stack</span><span class="o">&lt;</span><span class="n">Binarytree</span> <span class="o">&gt;</span> <span class="n">st</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">b</span><span class="o">!=</span><span class="k">nullptr</span><span class="o">||!</span><span class="n">st</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+    <span class="p">{</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">b</span><span class="o">!=</span><span class="k">nullptr</span><span class="p">)</span><span class="c1">//节点不为空
+</span><span class="c1"></span>        <span class="p">{</span>
+            <span class="n">st</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">b</span><span class="p">);</span><span class="c1">//压入当前节点
+</span><span class="c1"></span>            <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">;</span><span class="c1">//切换到左子树
+</span><span class="c1"></span>        <span class="p">}</span>
+        <span class="c1">//左子树为空,且栈不为空的情况下切换到父节点
+</span><span class="c1"></span>        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">st</span><span class="p">.</span><span class="n">empty</span><span class="p">()){</span>
+            <span class="n">b</span><span class="o">=</span><span class="n">st</span><span class="p">.</span><span class="n">top</span><span class="p">();</span>
+            <span class="n">st</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span> 
+
+            <span class="c1">//访问节点
+</span><span class="c1"></span>            <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">value</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+            <span class="c1">//如果有右子树,则切换到右子树,没有的话为空,再次循环时也会正常,所以不需要判断
+</span><span class="c1"></span>            <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="前序遍历-1">前序遍历</h3>
+<h4 id="首先我们来分析一下主要操作-1">首先我们来分析一下主要操作</h4>
+<ol>
+<li>边访问节点边输出当前节点的值,并把节点存入栈中,然后访问左子树,直到访问节点为空</li>
+<li>如果栈不空,从栈中弹出节点,访问他的右子树</li>
+</ol>
+<h4 id="循环结束的情况分析-1">循环结束的情况分析</h4>
+<ul>
+<li>感觉情况和中序遍历差不多的样子,就不列举了</li>
+</ul>
+<h4 id="总体的流程大概是-1">总体的流程大概是</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">while(b!=nullptr||!st.empty()){
+    while(b!=nullptr){
+        执行1;
+    }
+    if(!st.empty()){
+        执行2;
+    }
+}
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="丢代码-1">丢代码</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c++" data-lang="c++"><span class="kt">void</span> <span class="nf">pre_traverse</span><span class="p">(</span><span class="n">Binarytree</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">==</span><span class="k">nullptr</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">;</span>
+    <span class="n">stack</span><span class="o">&lt;</span><span class="n">Binarytree</span> <span class="o">&gt;</span> <span class="n">st</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">b</span><span class="o">!=</span><span class="k">nullptr</span><span class="o">||!</span><span class="n">st</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+    <span class="p">{</span>   
+        <span class="k">while</span> <span class="p">(</span><span class="n">b</span><span class="o">!=</span><span class="k">nullptr</span><span class="p">)</span><span class="c1">//节点不为空
+</span><span class="c1"></span>        <span class="p">{</span>
+            <span class="c1">//访问节点
+</span><span class="c1"></span>            <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">value</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+            <span class="n">st</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">b</span><span class="p">);</span><span class="c1">//压入当前节点
+</span><span class="c1"></span>            <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">;</span><span class="c1">//切换到左子树
+</span><span class="c1"></span>        <span class="p">}</span>
+        <span class="c1">//左子树为空,且栈不为空的情况下切换到父节点
+</span><span class="c1"></span>        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">st</span><span class="p">.</span><span class="n">empty</span><span class="p">()){</span>
+            <span class="n">b</span><span class="o">=</span><span class="n">st</span><span class="p">.</span><span class="n">top</span><span class="p">();</span>
+            <span class="n">st</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+            <span class="c1">//如果有右子树,则切换到右子树,没有的话为空,再次循环时也会正常,所以不需要判断
+</span><span class="c1"></span>            <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="后序遍历这个好像有点复杂来着有两种思路一种是节点增加一个参数用以确认是否第一次访问具体方法呢和上面两种差不多第二种是使用双指针的方法这里着重讨论第二种">后序遍历,这个好像有点复杂来着(有两种思路,一种是节点增加一个参数用以确认是否第一次访问,具体方法呢和上面两种差不多,第二种是使用双指针的方法,这里着重讨论第二种)</h3>
+<h4 id="具体思路"><em>具体思路</em></h4>
+<h4 id="利用两个指针-cur和pre进行操作其中cur用来保存当前节点的指针pre前一次访问的节点pre和cur没有确定的父子关系要保证根结点在左孩子和右孩子访问之后才能访问因此对于任一结点p先将其入栈">利用两个指针 cur和pre进行操作,其中cur用来保存当前节点的指针,pre前一次访问的节点(pre和cur没有确定的父子关系).要保证根结点在左孩子和右孩子访问之后才能访问，因此对于任一结点P，先将其入栈。</h4>
+<ol>
+<li>如果P不存在左孩子和右孩子，则可以直接访问它；</li>
+<li>或者P存在左孩子或者右孩子，但是其左孩子和右孩子都已被访问过了，则同样可以直接访问该结点。</li>
+<li>若非上述两种情况，则将P的右孩子和左孩子依次入栈，这样就保证了每次取栈顶元素的时候，左孩子在右孩子前面被访问，左孩子和右孩子都在根结点前面被访问。</li>
+</ol>
+<h4 id="首先我们来分析一下主要操作-2">首先我们来分析一下主要操作</h4>
+<ol>
+<li>访问节点 直接将节点压入栈中
+<ul>
+<li>如果节点不存在子树,直接访问</li>
+<li>如果节点存在节点,待按照顺序访问子节点后再从栈中弹出父节点进行访问</li>
+</ul>
+</li>
+</ol>
+<h4 id="循环结束的情况分析循环开始前将根节点压入">循环结束的情况分析(循环开始前将根节点压入)</h4>
+<ul>
+<li>节点为空,栈为空
+<ol>
+<li>空树,直接过滤</li>
+</ol>
+</li>
+<li>节点不为空,栈为空
+<ol>
+<li>根节点输出完毕,结束循环</li>
+</ol>
+</li>
+<li>节点为空,栈不为空
+<ol>
+<li>右端子树访问完毕,</li>
+</ol>
+</li>
+<li>节点不为空,栈不为空
+<ul>
+<li>这个没什么好说的</li>
+</ul>
+</li>
+</ul>
+<h4 id="总体的流程大概是-2">总体的流程大概是</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c++" data-lang="c++">
+<span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="n">st</span><span class="p">.</span><span class="n">empty</span><span class="p">()){</span>
+    <span class="k">if</span><span class="p">((</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">left</span><span class="o">==</span><span class="k">nullptr</span><span class="o">&amp;&amp;</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">right</span><span class="o">==</span><span class="k">nullptr</span><span class="p">)</span><span class="o">||</span>
+        <span class="p">((</span><span class="n">pre</span><span class="o">!=</span><span class="k">nullptr</span><span class="p">)</span><span class="o">&amp;&amp;</span><span class="p">(</span><span class="n">pre</span><span class="o">==</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">left</span><span class="o">||</span><span class="n">pre</span><span class="o">==</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">))){</span><span class="c1">//节点不存在子树,或者子树已经都被访问过了
+</span><span class="c1"></span>        <span class="err">执行</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span><span class="p">{</span>
+        <span class="err">执行</span><span class="mi">2</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="丢代码-2">丢代码</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c++" data-lang="c++"><span class="kt">void</span> <span class="nf">postorder_traversal</span><span class="p">(</span><span class="n">Binarytree</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">b</span><span class="o">==</span><span class="k">nullptr</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="n">Binarytree</span> <span class="n">cur</span><span class="p">;</span><span class="c1">//是指针哦 保存当前访问的节点
+</span><span class="c1"></span>    <span class="n">Binarytree</span> <span class="n">pre</span><span class="o">=</span><span class="k">nullptr</span><span class="p">;</span>
+    <span class="n">stack</span><span class="o">&lt;</span><span class="n">Binarytree</span> <span class="o">&gt;</span> <span class="n">st</span><span class="p">;</span>
+    <span class="n">st</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">b</span><span class="p">);</span><span class="c1">//先把根节点压入堆栈
+</span><span class="c1"></span>    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">st</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="c1">//堆栈不空,堆栈空的时候表示根节点已经被访问了
+</span><span class="c1"></span>    <span class="p">{</span>
+        <span class="n">cur</span><span class="o">=</span><span class="n">st</span><span class="p">.</span><span class="n">top</span><span class="p">();</span><span class="c1">//当前访问的节点为栈顶节点 不弹出
+</span><span class="c1"></span>        <span class="c1">//节点没有子树
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">((</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">left</span><span class="o">==</span><span class="k">nullptr</span><span class="o">&amp;&amp;</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">right</span><span class="o">==</span><span class="k">nullptr</span><span class="p">)</span><span class="o">||</span>
+        <span class="p">(</span><span class="n">pre</span><span class="o">!=</span><span class="k">nullptr</span><span class="o">&amp;&amp;</span><span class="p">(</span><span class="n">pre</span><span class="o">==</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">left</span><span class="o">||</span><span class="n">pre</span><span class="o">==</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">)))</span><span class="c1">//或者节点的子树都被访问过了,即上一个访问的节点是当前节点的子节点
+</span><span class="c1"></span>        <span class="p">{</span>
+            <span class="c1">//访问当前节点
+</span><span class="c1"></span>            <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">value</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+            <span class="n">st</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span><span class="c1">//弹出堆栈 弹出就代表访问了该节点
+</span><span class="c1"></span>
+            <span class="n">pre</span><span class="o">=</span><span class="n">cur</span><span class="p">;</span><span class="c1">//为下一次访问做准备
+</span><span class="c1"></span>        <span class="p">}</span>
+        <span class="k">else</span><span class="c1">//存在还未访问的子树，进行子树的访问
+</span><span class="c1"></span>        <span class="p">{</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">left</span><span class="o">!=</span><span class="k">nullptr</span><span class="p">)</span>
+                <span class="n">st</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">right</span><span class="o">!=</span><span class="k">nullptr</span><span class="p">)</span>
+                <span class="n">st</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">cur</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><em>这个算法的实现我参考了这个大佬的博客:</em><a href="https://www.cnblogs.com/dolphin0520/archive/2011/08/25/2153720.html">二叉树的非递归遍历</a></p>
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://wuliaotc.github.io/tags/c/c&#43;&#43;/">c/c&#43;&#43;</a>
+          <a href="https://wuliaotc.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/sgi_stl%E4%B8%ADstdlistsort%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">SGI_STL中std::list::sort的实现细节</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/post/%E7%AE%97%E6%B3%95/leetcode09/">
+            <span class="next-text nav-default">Leetcode09</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+  
+  
+
+  
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://github.com/wuliaotc" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://wuliaotc.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2019 -
+    2020
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        wuliaotc
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

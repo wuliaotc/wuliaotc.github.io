@@ -6,10 +6,15 @@
     <description>Recent content in linux on wuliaotc 的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 19 Mar 2020 13:06:44 +0800</lastBuildDate>
-    
-	<atom:link href="https://wuliaotc.github.io/categories/linux/index.xml" rel="self" type="application/rss+xml" />
-    
+    <lastBuildDate>Sun, 01 Nov 2020 16:46:16 +0800</lastBuildDate><atom:link href="https://wuliaotc.github.io/categories/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用shell在一堆图片中筛选出心仪的壁纸</title>
+      <link>https://wuliaotc.github.io/post/%E4%BD%BF%E7%94%A8shell%E5%9C%A8%E4%B8%80%E5%A0%86%E5%9B%BE%E7%89%87%E4%B8%AD%E7%AD%9B%E9%80%89%E5%87%BA%E5%BF%83%E4%BB%AA%E7%9A%84%E5%A3%81%E7%BA%B8/</link>
+      <pubDate>Sun, 01 Nov 2020 16:46:16 +0800</pubDate>
+      
+      <guid>https://wuliaotc.github.io/post/%E4%BD%BF%E7%94%A8shell%E5%9C%A8%E4%B8%80%E5%A0%86%E5%9B%BE%E7%89%87%E4%B8%AD%E7%AD%9B%E9%80%89%E5%87%BA%E5%BF%83%E4%BB%AA%E7%9A%84%E5%A3%81%E7%BA%B8/</guid>
+      <description>​ 作为一个有收藏癖的lsp，特别喜欢收集各种美图和壁纸，可能一不小心就收集了上万张。虽然收集了很多壁纸，但是里面满足屏幕（比例和分辨率）要求</description>
+    </item>
     
     <item>
       <title>Linux入门</title>
